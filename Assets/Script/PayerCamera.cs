@@ -22,8 +22,8 @@ public class PayerCamera : MonoBehaviour
         playerBody.Rotate(Vector3.up * mouseX);
     }
 
-    public void OnLook(InputValue value)
+    public void OnLook(InputAction.CallbackContext context)
     {
-        lookInput = value.Get<Vector2>();
+        lookInput = context.ReadValue<Vector2>();
     }
 }
