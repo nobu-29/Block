@@ -10,6 +10,9 @@ public class PlayerControler : MonoBehaviour
     public Camera _camera;
     public Rigidbody _rb;
 
+    public float reachDistance = 5f; // ブロックの届く距離
+    public ChunkGenerator chunk;    //破壊・設置対象のチャンク
+
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
     private Vector2 moveInput;
@@ -29,14 +32,9 @@ public class PlayerControler : MonoBehaviour
 
         // 入力に応じて移動方向を決定
         Vector3 move = forward * moveInput.y + right * moveInput.x;
-        if (_isDash)
-        {
-            transform.Translate(move * MoveSpeed * MoveBoost * Time.deltaTime, Space.World);
-        }
-        else
-        {
-            transform.Translate(move * MoveSpeed * Time.deltaTime, Space.World);
-        }
+
+        float speed = _isDash ? MoveSpeed * MoveBoost : MoveSpeed;
+        transform.Translate(move * speed * Time.deltaTime, Space.World);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -51,7 +49,7 @@ public class PlayerControler : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (_isJump)
+        if (context.performed && _isJump)
         {
             _rb.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
             _isJump = false;
@@ -61,5 +59,36 @@ public class PlayerControler : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
          _isJump = true;
+    }
+
+    // --- ブロック破壊 ---
+    public void BreakBlock(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        Ray ray = new Ray(_camera.transform.position,_camera.transform.forward);
+        if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        {
+            Vector3 pos = hit.point - hit.normal * 0.5f;
+            Vector3Int blockPos = Vector3Int.FloorToInt(pos);
+
+            chunk.BreakBlock(blockPos);
+        }
+    }
+
+    // --- ブロック設置 ---
+    public void PlaceBlock(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        {
+            Vector3 pos = hit.point + hit.normal * 0.5f;
+            Vector3Int blockPos = Vector3Int.FloorToInt(pos);
+
+            chunk.PlaceBlock(blockPos);
+        }
     }
 }

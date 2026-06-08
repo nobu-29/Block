@@ -588,6 +588,54 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
+--- !u!1 &519323028
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 519323030}
+  - component: {fileID: 519323029}
+  m_Layer: 0
+  m_Name: Chunk
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &519323029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519323028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df911b68052c8664ab38b85b1707eb92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chunkSize: 16
+  noiseScale: 0.1
+  heightMultiplier: 5
+  maxHeight: 16
+--- !u!4 &519323030
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519323028}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &559832335
 GameObject:
   m_ObjectHideFlags: 0
@@ -969,6 +1017,8 @@ MonoBehaviour:
   JumpPower: 1.5
   _camera: {fileID: 1210267262}
   _rb: {fileID: 1923960917}
+  reachDistance: 5
+  chunk: {fileID: 519323029}
   _isDash: 0
 --- !u!114 &1923960916
 MonoBehaviour:
@@ -1075,6 +1125,38 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: e4f32ffe-35df-4946-b1f4-54b95fbacbd1
     m_ActionName: 'UI/UIopen[/Keyboard/q]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1923960914}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 862f0b29-791a-4133-933c-1ccb0b69ad68
+    m_ActionName: 'Player/Break[/DualSenseGamepadHID1/rightTrigger,/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1923960914}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: a7f6970a-b1ab-485d-8048-a641c07a7b12
+    m_ActionName: 'Player/Place[/DualSenseGamepadHID1/leftTrigger,/Mouse/rightButton]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -1190,7 +1272,7 @@ Transform:
   m_GameObject: {fileID: 1923960914}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 5.41, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1211,7 +1293,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBody: {fileID: 1923960922}
   _playerCamera: {fileID: 1210267262}
-  sensitivity: 2
+  sensitivity: 10
 --- !u!114 &1923960924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1310,3 +1392,4 @@ SceneRoots:
   - {fileID: 1923960922}
   - {fileID: 271098822}
   - {fileID: 559832338}
+  - {fileID: 519323030}
