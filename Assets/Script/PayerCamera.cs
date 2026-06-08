@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class PayerCamera : MonoBehaviour
 {
     public Transform playerBody;
+    public Camera _playerCamera;
     public float sensitivity = 2f;
 
     private Vector2 lookInput;
@@ -16,7 +17,7 @@ public class PayerCamera : MonoBehaviour
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -80f, 80f);
-        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        _playerCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
         playerBody.Rotate(Vector3.up * mouseX);
     }
