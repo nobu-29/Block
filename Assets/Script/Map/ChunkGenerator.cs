@@ -48,7 +48,8 @@ public class ChunkGenerator : MonoBehaviour
                     bool east = x + 1 >= chunkSize || blocks[x + 1, y, z] == 0;
                     bool west = x - 1 < 0 || blocks[x - 1, y, z] == 0;
 
-                    AddCube(vertices, triangles, new Vector3(x, y, z),
+                    int blockID = blocks[x, y, z];
+                    AddCube(vertices, triangles, new Vector3(x, y, z),blockID,
                         up, down, north, south, east, west);
                 }
             }
@@ -61,7 +62,7 @@ public class ChunkGenerator : MonoBehaviour
         meshFilter.mesh = mesh;
     }
 
-        void GenerateInitialBlocks()
+    void GenerateInitialBlocks()
     {
         for (int x = 0; x < chunkSize; x++)
         {
@@ -72,7 +73,12 @@ public class ChunkGenerator : MonoBehaviour
 
                 for (int y = 0; y <= h; y++)
                 {
-                    blocks[x, y, z] = 1; // 1 = ƒuƒƒbƒN‚ ‚è
+                    if(y == h)
+                        blocks[x, y, z] = 1;
+                    else if(y > h -3)
+                        blocks[x, y, z] = 2;
+                    else
+                        blocks[x, y, z] = 3;
                 }
             }
         }
@@ -82,6 +88,7 @@ public class ChunkGenerator : MonoBehaviour
     List<Vector3> v,
     List<int> t,
     Vector3 pos,
+    int blockID,
     bool up, bool down, bool north, bool south, bool east, bool west)
     {
         if (up) AddFace(v, t, pos + new Vector3(0, 1, 0), Vector3.up);
@@ -127,11 +134,11 @@ public class ChunkGenerator : MonoBehaviour
         GenerateChunk();
     }
 
-    public void PlaceBlock(Vector3Int pos)
+    public void PlaceBlock(Vector3Int pos, int blockID)
     {
         if (!InRange(pos)) return;
 
-        blocks[pos.x, pos.y, pos.z] = 1;
+        blocks[pos.x, pos.y, pos.z] = blockID;
         GenerateChunk();
     }
 

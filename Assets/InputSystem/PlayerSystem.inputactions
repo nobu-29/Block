@@ -58,6 +58,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "UIopen",
+                    "type": "Button",
+                    "id": "2e8d9c40-5031-4fcd-8c45-92dc4a959e75",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HotbarMoveLeft",
+                    "type": "Button",
+                    "id": "0e96d3af-228e-4176-a165-470abe6d8617",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HotbarMoveRight",
+                    "type": "Button",
+                    "id": "b746a932-5256-46a2-8358-e85dd031979f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -291,27 +318,54 @@
                     "action": "Place",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "UI",
-            "id": "a932259a-d38b-4980-9b42-0a51d7992c95",
-            "actions": [
-                {
-                    "name": "UIopen",
-                    "type": "Button",
-                    "id": "e4f32ffe-35df-4946-b1f4-54b95fbacbd1",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
+                },
                 {
                     "name": "",
-                    "id": "0fae6ad3-a3f4-46ce-8f6a-2a6e6abf7291",
+                    "id": "4921d51c-f2e4-40fa-8d7a-7712940d1904",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotbarMoveLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8dc9064d-b0ff-45e4-9355-dd7004b656f1",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotbarMoveLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1b36e225-eaed-47ec-bf3c-c64eb5e1117d",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotbarMoveRight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a769d7ed-8b1d-48c1-9b93-0f76af6d78c9",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HotbarMoveRight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a45fdb5a-9954-4a9c-893b-dde1f7563eca",
                     "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "",
@@ -322,7 +376,7 @@
                 },
                 {
                     "name": "",
-                    "id": "3e6b1e4f-bd84-4e45-bf2d-5af763ac60a1",
+                    "id": "b44e0d90-993b-4b99-8bb9-0cb524b1b4b7",
                     "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
@@ -332,6 +386,12 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "UI",
+            "id": "a932259a-d38b-4980-9b42-0a51d7992c95",
+            "actions": [],
+            "bindings": []
         }
     ],
     "controlSchemes": []

@@ -1,3 +1,4 @@
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,6 +10,8 @@ public class PlayerControler : MonoBehaviour
     public float JumpPower = 1.5f;
     public Camera _camera;
     public Rigidbody _rb;
+    public int selectedBlockID = 1;
+    public HotbarMG _hotbar;
 
     public float reachDistance = 5f; // ブロックの届く距離
     public ChunkGenerator chunk;    //破壊・設置対象のチャンク
@@ -88,7 +91,27 @@ public class PlayerControler : MonoBehaviour
             Vector3 pos = hit.point + hit.normal * 0.5f;
             Vector3Int blockPos = Vector3Int.FloorToInt(pos);
 
-            chunk.PlaceBlock(blockPos);
+            int blockID = _hotbar.GetSelectedBlockID();
+
+            chunk.PlaceBlock(blockPos,selectedBlockID);
         }
+    }
+
+    public void UIMoveLeft(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        int newIndex = _hotbar.selectedIndex - 1;
+        if(newIndex < 0) newIndex = _hotbar.slots.Length - 1;
+        
+        _hotbar.Select(newIndex);
+    }
+    public void UIMoveRight(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        int newIndex = (_hotbar.selectedIndex + 1) % _hotbar.slots.Length;
+
+        _hotbar.Select(newIndex);
     }
 }
