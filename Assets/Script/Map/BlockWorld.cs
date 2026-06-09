@@ -2,28 +2,43 @@ using UnityEngine;
 
 public class BlockWorld : MonoBehaviour
 {
-    public GameObject BlockPF;
+    public GameObject DirtPF;
+    public GameObject GrassPF;
+    public GameObject StonePF;
 
-    public int width = 20;
-    public int height = 16;
-    public int depth = 20;
+    public int chunkSize = 16;
+    public int maxheight = 16;
+    public float noiseScale = 0.1f;
+    public float heightMultiplier = 5f;
 
     private void Start()
     {
-        for(int x = 0; x < width; x++)
-        {
-            for (int z = 0;z < depth; z++)
-            {
-                int YHeight = Mathf.FloorToInt(
-                    Mathf.PerlinNoise(x * 0.1f,z * 0.1f) * height
-                    );
+        GenerateWorld();
 
-                for (int y = 0; y <= YHeight; y++)
+        
+    }
+
+    void GenerateWorld()
+    {
+        for (int x = 0; x < chunkSize; x++)
+        {
+            for (int z = 0; z < chunkSize; z++)
+            {
+                float Yheight = Mathf.PerlinNoise(x * noiseScale, z * noiseScale) * heightMultiplier;
+
+                int height = Mathf.FloorToInt(Yheight);
+
+                for (int y = 0; y <= height; y++)
                 {
-                    Instantiate(
-                        BlockPF, new Vector3(x, y, z),
-                        Quaternion.identity
-                        );
+                    GameObject prefab;
+                    if (y == height)
+                        prefab = GrassPF;
+                    else if (y > height - 3)
+                        prefab = DirtPF;
+                    else
+                        prefab = StonePF;
+
+                    Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
                 }
 
             }

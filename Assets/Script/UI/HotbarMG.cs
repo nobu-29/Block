@@ -1,11 +1,20 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+[System.Serializable]
+public class HotBarSlot
+{
+    public Image icon;
+    public Image select;
+    public ItemObject item;
+}
+
 public class HotbarMG : MonoBehaviour
 {
-    public Image[] slots;
-    public int[] blockIDs;
+    public HotBarSlot[] slots;
+    public Inventory _inventory;
     public int selectedIndex = 0;
 
     public Color normalColor = Color.white;
@@ -13,26 +22,49 @@ public class HotbarMG : MonoBehaviour
 
     private void Start()
     {
+        UpdateUI();
         UpdateHighlight();
     }
 
-    private void Update()
-    {
-    }
     public void Select(int index)
     {
         selectedIndex = index;
         UpdateHighlight();
     }
+
     void UpdateHighlight()
     {
-        for (int i = 0;i <slots.Length;i++)
+        for (int i = 0; i <slots.Length; i++)
         {
-            slots[i].color = (i == selectedIndex) ? selectedColor : normalColor;
+            slots[i].select.color = (i == selectedIndex) ? selectedColor : normalColor;
         }
     }
-    public int GetSelectedBlockID()
+
+    public void UpdateUI()
     {
-        return blockIDs[selectedIndex];
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if(i < _inventory.myinventory.Count)
+            {
+                slots[i].item = _inventory.myinventory[i].item;
+                slots[i].icon.sprite = slots[i].item.icon;
+                slots[i].icon.enabled = true;
+            }
+            else
+            {
+                slots[i].item = null;
+                slots[i].icon.sprite = null;
+                slots[i].icon.enabled = false;
+            }
+        }
+    }
+
+    public ItemObject GetSelectedItem()
+    {
+        if(selectedIndex < slots.Length && slots[selectedIndex].item != null)
+        {
+            return slots[selectedIndex].item;
+        }
+        return null;
     }
 }

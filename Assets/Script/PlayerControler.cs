@@ -12,6 +12,8 @@ public class PlayerControler : MonoBehaviour
     public Rigidbody _rb;
     public int selectedBlockID = 1;
     public HotbarMG _hotbar;
+    public Inventory _playerInventory;
+    public ItemObject blockItem;
 
     public float reachDistance = 5f; // ブロックの届く距離
     public BlockWorld blockchunk;
@@ -73,12 +75,15 @@ public class PlayerControler : MonoBehaviour
         Ray ray = new Ray(_camera.transform.position,_camera.transform.forward);
         if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
-            Vector3 pos = hit.point - hit.normal * 0.5f;
-            Vector3Int blockPos = Vector3Int.FloorToInt(pos);
+            var block = hit.collider.GetComponent<BlockMG>();
+            if(block != null)
+            {
+                _playerInventory.itemGet(block.itemData);
 
-            Destroy(hit.collider.gameObject);
-            //chunk.BreakBlock(blockPos);
+                Destroy(hit.collider.gameObject);
+            }
         }
+        _hotbar.UpdateUI();
     }
 
     // --- ブロック設置 ---
@@ -90,14 +95,18 @@ public class PlayerControler : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
-            Vector3 pos = hit.point + hit.normal * 0.5f;
-            Vector3Int blockPos = Vector3Int.FloorToInt(pos);
+            Vector3Int blockPos = Vector3Int.FloorToInt(hit.point + hit.normal * 0.5f);
 
-            int blockID = _hotbar.GetSelectedBlockID();
+            ItemObject item = _hotbar.GetSelectedItem();
 
-            Instantiate(blockchunk.BlockPF, pos, Quaternion.identity);
-            //chunk.PlaceBlock(blockPos,selectedBlockID);
+            if(item != null && _playerInventory.ItemHas(item))
+            {
+                Instantiate(item.blockPrefab , blockPos, Quaternion.identity);
+
+                _playerInventory.ItemRemove(item);
+            }
         }
+        _hotbar.UpdateUI();
     }
 
     public void UIMoveLeft(InputAction.CallbackContext context)
