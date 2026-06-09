@@ -10,7 +10,6 @@ public class PlayerControler : MonoBehaviour
     public float JumpPower = 1.5f;
     public Camera _camera;
     public Rigidbody _rb;
-    public int selectedBlockID = 1;
     public HotbarMG _hotbar;
     public Inventory _playerInventory;
     public ItemObject blockItem;

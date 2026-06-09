@@ -5,12 +5,13 @@ using UnityEngine;
 public class Inventory : ScriptableObject
 {
     public List<InventorySlot> myinventory = new List<InventorySlot>();
+    public int maxStack = 100;
 
     public void itemGet(ItemObject item)
     {
         foreach (var slot in myinventory)
         {
-            if(slot.item == item)
+            if(slot.item == item && slot.count < maxStack)
             {
                 slot.count++;
                 return;

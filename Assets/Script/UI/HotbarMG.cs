@@ -9,6 +9,7 @@ public class HotBarSlot
     public Image icon;
     public Image select;
     public ItemObject item;
+    public Text countText;
 }
 
 public class HotbarMG : MonoBehaviour
@@ -46,15 +47,26 @@ public class HotbarMG : MonoBehaviour
         {
             if(i < _inventory.myinventory.Count)
             {
-                slots[i].item = _inventory.myinventory[i].item;
-                slots[i].icon.sprite = slots[i].item.icon;
+                var data = _inventory.myinventory[i];
+
+                slots[i].item = data.item;
+                slots[i].icon.sprite = data.item.icon;
                 slots[i].icon.enabled = true;
+
+                //ŒÂ”•\Ž¦
+                int count = _inventory.myinventory[i].count;
+
+                if (count > 1)
+                    slots[i].countText.text = count.ToString();
+                else
+                    slots[i].countText.text = "";
             }
             else
             {
                 slots[i].item = null;
-                slots[i].icon.sprite = null;
                 slots[i].icon.enabled = false;
+
+                slots[i].countText.text = "";
             }
         }
     }
@@ -67,4 +79,5 @@ public class HotbarMG : MonoBehaviour
         }
         return null;
     }
+
 }

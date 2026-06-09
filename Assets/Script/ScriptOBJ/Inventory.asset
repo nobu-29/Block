@@ -12,4 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6db6e8e9e971a842a06e4e1dc9fd7f7, type: 3}
   m_Name: Inventory
   m_EditorClassIdentifier: 
-  myinventory: []
+  myinventory:
+  - item: {fileID: 11400000, guid: ed487e70d8b15e94191ac37f37bd0eb5, type: 2}
+    count: 10
+  - item: {fileID: 11400000, guid: 9cc12e4ae0463004b9cea75030c77e9e, type: 2}
+    count: 9
+  - item: {fileID: 11400000, guid: 298de847ceed3ed479ccf472f12b5d31, type: 2}
+    count: 4
+  maxStack: 100
