@@ -14,7 +14,8 @@ public class PlayerControler : MonoBehaviour
     public HotbarMG _hotbar;
 
     public float reachDistance = 5f; // ブロックの届く距離
-    public ChunkGenerator chunk;    //破壊・設置対象のチャンク
+    public BlockWorld blockchunk;
+    //public ChunkGenerator chunk;    //破壊・設置対象のチャンク
 
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
@@ -75,7 +76,8 @@ public class PlayerControler : MonoBehaviour
             Vector3 pos = hit.point - hit.normal * 0.5f;
             Vector3Int blockPos = Vector3Int.FloorToInt(pos);
 
-            chunk.BreakBlock(blockPos);
+            Destroy(hit.collider.gameObject);
+            //chunk.BreakBlock(blockPos);
         }
     }
 
@@ -93,7 +95,8 @@ public class PlayerControler : MonoBehaviour
 
             int blockID = _hotbar.GetSelectedBlockID();
 
-            chunk.PlaceBlock(blockPos,selectedBlockID);
+            Instantiate(blockchunk.BlockPF, pos, Quaternion.identity);
+            //chunk.PlaceBlock(blockPos,selectedBlockID);
         }
     }
 
