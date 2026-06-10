@@ -3068,7 +3068,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBody: {fileID: 1923960922}
   _playerCamera: {fileID: 1210267262}
-  sensitivity: 200
+  sensitivity: 20
 --- !u!1 &1945902033
 GameObject:
   m_ObjectHideFlags: 0

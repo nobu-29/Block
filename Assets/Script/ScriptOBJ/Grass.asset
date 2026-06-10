@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 21300000, guid: edabf831f3a58c4489ecd887f6162f1e, type: 3}
   ItemName: "\u8349"
+  blockID: 1
   blockPrefab: {fileID: 5757061647862183185, guid: a20ec64c44e5f634486029003d604fab, type: 3}
   Itemdel: "\u5927\u4F53\u5730\u4E0A\u306B\u306F\u3048\u3066\u3044\u308B\nWWW"

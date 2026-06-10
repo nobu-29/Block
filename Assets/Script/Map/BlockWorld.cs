@@ -24,6 +24,7 @@ public class BlockWorld : MonoBehaviour
     private Dictionary<Vector2Int, GameObject> chunks = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, ChunkData> _chunkDatas = new Dictionary<Vector2Int, ChunkData>();
     private Vector2Int currentPlayerChunk;
+    private Queue<GameObject> blockPool = new Queue<GameObject>();
 
     private void Start()
     {
@@ -71,7 +72,21 @@ public class BlockWorld : MonoBehaviour
         {
             if (!neededChunks.Contains(chunk.Key))
             {
-                Destroy(chunk.Value);
+                GameObject chunkobj = chunk.Value;
+                Transform chunkTransform = chunkobj.transform; 
+
+                foreach(Transform child in chunkTransform)
+                {
+                    if (child != null) continue;
+
+                    GameObject obj = child.gameObject;
+                    if (obj == null) continue;
+
+                    child.gameObject.SetActive(false);
+                    blockPool.Enqueue(child.gameObject);
+                }
+
+                Destroy(chunkobj);
                 toRemove.Add(chunk.Key);
             }
         }
@@ -82,21 +97,6 @@ public class BlockWorld : MonoBehaviour
         }
     }
 
-/*
-    void GenerateWorld()
-    {
-
-        for (int cx = 0; cx < worldSize; cx++)
-        {
-            for (int cz = 0; cz < worldSize; cz++)
-            {
-                GenerateChunk(cx, cz);
-            }
-        }
-
-    }*/
-
-
     Vector2Int GetPlayerChunk()
     {
         int x = Mathf.FloorToInt(_player.position.x / chunkSize);
@@ -104,37 +104,6 @@ public class BlockWorld : MonoBehaviour
 
         return new Vector2Int(x, z);
     }
-
-
-   /* void GenerateChunk(int chunkX,int chunkZ)
-    {
-        for (int x = 0; x < chunkSize; x++)
-        {
-            for (int z = 0; z < chunkSize; z++)
-            {
-                int worldX = x + chunkX * chunkSize;
-                int worldZ = z + chunkZ * chunkSize;
-
-                float Yheight = Mathf.PerlinNoise(worldX * noiseScale, worldZ * noiseScale) * heightMultiplier;
-
-                int height = Mathf.FloorToInt(Yheight);
-
-                for (int y = 0; y <= height; y++)
-                {
-                    GameObject prefab;
-                    if (y == height)
-                        prefab = GrassPF;
-                    else if (y > height - 3)
-                        prefab = DirtPF;
-                    else
-                        prefab = StonePF;
-
-                    Instantiate(prefab, new Vector3(worldX, y, worldZ), Quaternion.identity);
-                }
-
-            }
-        }
-    }*/
 
     void GenerateChunk(Vector2Int chunkPos)
     {
@@ -176,7 +145,7 @@ public class BlockWorld : MonoBehaviour
                     if (ID == 0) continue;
 
                     GameObject prefab = GetPrefabID(ID);
-                    GameObject block = Instantiate(prefab, blockpos, Quaternion.identity);
+                    GameObject block = GetBlock(prefab,blockpos);
                     block.transform.parent = chunkObj.transform;
                     block.isStatic = true;
                 }
@@ -192,21 +161,42 @@ public class BlockWorld : MonoBehaviour
         Vector2Int chunkPos = new Vector2Int(
                 Mathf.FloorToInt((float)worldPos.x / chunkSize),
                 Mathf.FloorToInt((float)worldPos.z / chunkSize)
-            );
+        );
 
         if (!_chunkDatas.ContainsKey(chunkPos))
-        {
             _chunkDatas[chunkPos] = new ChunkData();
-        }
 
         _chunkDatas[chunkPos].modifiedBlocks[worldPos] = blockID;
 
-        if (chunks.ContainsKey(chunkPos))
+        if (!chunks.ContainsKey(chunkPos)) return;
+
+        Transform chunkTransform = chunks[chunkPos].transform;
+
+        if (blockID == 0)
         {
-            Destroy(chunks[chunkPos]);
-            chunks.Remove(chunkPos);
-            GenerateChunk(chunkPos);
+            foreach(Transform child in chunkTransform)
+            {
+                    if (child == null) continue;
+
+                    if(Vector3Int.FloorToInt(child.position) == worldPos)
+                {
+                    child.gameObject.SetActive(false);
+                    blockPool.Enqueue(child.gameObject);
+                    return;
+                }
+            }
+
+/*            Destroy(chunks[chunkPos]);
+            chunks.Remove(chunkPos);*/
         }
+        else
+        {
+            GameObject prefab = GetPrefabID(blockID);
+            GameObject block = GetBlock(prefab, worldPos);
+            block.transform.parent = chunkTransform;
+        }
+
+        GenerateChunk(chunkPos);
     }
 
     GameObject GetPrefabID(int ID)
@@ -221,5 +211,26 @@ public class BlockWorld : MonoBehaviour
                 return null;
 
         }
+    }
+
+    GameObject GetBlock(GameObject prefab, Vector3 pos)
+    {
+        while (blockPool.Count > 0)
+        {
+            GameObject block = blockPool.Dequeue();
+
+            if(block == null) continue;
+
+            block.transform.position = pos;
+            block.SetActive(true);
+            return block;
+        }
+        return Instantiate(prefab, pos, Quaternion.identity);
+    }
+
+    public void ReturnBlock(GameObject block)
+    {
+        block.SetActive(false);
+        blockPool.Enqueue(block);
     }
 }

@@ -19,7 +19,6 @@ public class PlayerControler : MonoBehaviour
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
     private Vector2 moveInput;
-    private Queue<GameObject> blockPool = new Queue<GameObject>();
 
     void Update()
     {
@@ -83,10 +82,10 @@ public class PlayerControler : MonoBehaviour
             {
                 _playerInventory.itemGet(block.itemData);
 
-                Vector3Int blockPos = Vector3Int.FloorToInt(hit.point - hit.normal * 0.5f);
+                Vector3 hitPos = hit.point - hit.normal * 0.01f;
+                Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
                 blockchunk.ModifyBlock(blockPos, 0);
-                hit.collider.gameObject.SetActive(false);
-                blockPool.Enqueue(hit.collider.gameObject);
+                blockchunk.ReturnBlock(hit.collider.gameObject);
             }
         }
         _hotbar.UpdateUI();
@@ -102,7 +101,8 @@ public class PlayerControler : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
-            Vector3Int blockPos = Vector3Int.FloorToInt(hit.point + hit.normal * 0.5f);
+            Vector3 hitPos = hit.point + hit.normal * 0.01f;
+            Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
             
             if(Physics.CheckBox(blockPos,Vector3.one * 0.45f, Quaternion.identity, LayerMask.GetMask("Block")))
                 return;
@@ -136,20 +136,5 @@ public class PlayerControler : MonoBehaviour
         int newIndex = (_hotbar.selectedIndex + 1) % _hotbar.slots.Length;
 
         _hotbar.Select(newIndex);
-    }
-
-    GameObject GetBlock(GameObject prefab, Vector3 pos)
-    {
-        if(blockPool.Count > 0)
-        {
-            GameObject block = blockPool.Dequeue();
-            block.transform.position = pos;
-            block.SetActive(true);
-            return block;
-        }
-        else
-        {
-            return Instantiate(prefab, pos, Quaternion.identity);
-        }
     }
 }
