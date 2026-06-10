@@ -5,6 +5,7 @@ public class ItemObject : ScriptableObject
 {
     public Sprite icon;
     public string ItemName;
+    public int blockID;
     public GameObject blockPrefab;
     [TextArea(1,4)] public string Itemdel;
 }

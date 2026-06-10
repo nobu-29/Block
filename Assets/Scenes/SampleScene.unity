@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &86221737
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -220,12 +220,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 86221736}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -1.69, z: 0}
   m_LocalScale: {x: 20, y: 1, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 832575519}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &271098818
 GameObject:
@@ -731,9 +731,11 @@ MonoBehaviour:
   DirtPF: {fileID: 2612049275117098324, guid: cd5a94a68ee26a5489f5b3f7ddb95855, type: 3}
   GrassPF: {fileID: 5757061647862183185, guid: a20ec64c44e5f634486029003d604fab, type: 3}
   StonePF: {fileID: 5271034238063244034, guid: 401d8dc74243cff4c945b764885a8b7f, type: 3}
+  _player: {fileID: 1923960922}
   chunkSize: 16
-  worldSize: 4
-  maxheight: 20
+  viewDistance: 2
+  worldSize: 10
+  maxheight: -40
   noiseScale: 0.1
   heightMultiplier: 10
 --- !u!1 &554218434
@@ -1497,7 +1499,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 86221740}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &864977138
@@ -2730,7 +2733,6 @@ GameObject:
   - component: {fileID: 1923960916}
   - component: {fileID: 1923960915}
   - component: {fileID: 1923960923}
-  - component: {fileID: 1923960924}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2756,8 +2758,8 @@ MonoBehaviour:
   _camera: {fileID: 1210267262}
   _rb: {fileID: 1923960917}
   _hotbar: {fileID: 718096206}
+  _inventoryUI: {fileID: 271098823}
   _playerInventory: {fileID: 11400000, guid: bff980be3b3c1984ea4468be4a8af91d, type: 2}
-  blockItem: {fileID: 11400000, guid: 9cc12e4ae0463004b9cea75030c77e9e, type: 2}
   reachDistance: 5
   blockchunk: {fileID: 519323031}
   _isDash: 1
@@ -2981,8 +2983,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 0.5, z: 1}
+  m_Center: {x: 0, y: -0.24, z: 0}
 --- !u!23 &1923960920
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3066,19 +3068,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBody: {fileID: 1923960922}
   _playerCamera: {fileID: 1210267262}
-  sensitivity: 5
---- !u!114 &1923960924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1923960914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58d545731f7545745b228d470f2c4382, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  sensitivity: 200
 --- !u!1 &1945902033
 GameObject:
   m_ObjectHideFlags: 0
@@ -3968,7 +3958,6 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
-  - {fileID: 86221740}
   - {fileID: 1923960922}
   - {fileID: 271098822}
   - {fileID: 559832338}

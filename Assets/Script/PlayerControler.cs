@@ -1,5 +1,4 @@
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
-using UnityEditor.Rendering.LookDev;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,16 +10,16 @@ public class PlayerControler : MonoBehaviour
     public Camera _camera;
     public Rigidbody _rb;
     public HotbarMG _hotbar;
+    public InventoryUIMG _inventoryUI;
     public Inventory _playerInventory;
-    public ItemObject blockItem;
 
     public float reachDistance = 5f; // ブロックの届く距離
-    public BlockWorld blockchunk;
-    //public ChunkGenerator chunk;    //破壊・設置対象のチャンク
+    public BlockWorld blockchunk;   //破壊・設置対象のチャンク
 
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
     private Vector2 moveInput;
+    private Queue<GameObject> blockPool = new Queue<GameObject>();
 
     void Update()
     {
@@ -39,7 +38,8 @@ public class PlayerControler : MonoBehaviour
         Vector3 move = forward * moveInput.y + right * moveInput.x;
 
         float speed = _isDash ? MoveSpeed * MoveBoost : MoveSpeed;
-        transform.Translate(move * speed * Time.deltaTime, Space.World);
+        _rb.MovePosition(transform.position + move * speed * Time.deltaTime);
+        //transform.Translate(move * speed * Time.deltaTime, Space.World);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -63,6 +63,10 @@ public class PlayerControler : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
+/*        if(collision.gameObject.layer == "Block")
+        {
+
+        }*/
          _isJump = true;
     }
 
@@ -79,10 +83,14 @@ public class PlayerControler : MonoBehaviour
             {
                 _playerInventory.itemGet(block.itemData);
 
-                Destroy(hit.collider.gameObject);
+                Vector3Int blockPos = Vector3Int.FloorToInt(hit.point - hit.normal * 0.5f);
+                blockchunk.ModifyBlock(blockPos, 0);
+                hit.collider.gameObject.SetActive(false);
+                blockPool.Enqueue(hit.collider.gameObject);
             }
         }
         _hotbar.UpdateUI();
+        _inventoryUI.UpdateUI();
     }
 
     // --- ブロック設置 ---
@@ -95,17 +103,21 @@ public class PlayerControler : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
             Vector3Int blockPos = Vector3Int.FloorToInt(hit.point + hit.normal * 0.5f);
+            
+            if(Physics.CheckBox(blockPos,Vector3.one * 0.45f, Quaternion.identity, LayerMask.GetMask("Block")))
+                return;
 
             ItemObject item = _hotbar.GetSelectedItem();
 
             if(item != null && _playerInventory.ItemHas(item))
             {
-                Instantiate(item.blockPrefab , blockPos, Quaternion.identity);
+                blockchunk.ModifyBlock(blockPos, item.blockID);
 
                 _playerInventory.ItemRemove(item);
             }
         }
         _hotbar.UpdateUI();
+        _inventoryUI.UpdateUI();
     }
 
     public void UIMoveLeft(InputAction.CallbackContext context)
@@ -124,5 +136,20 @@ public class PlayerControler : MonoBehaviour
         int newIndex = (_hotbar.selectedIndex + 1) % _hotbar.slots.Length;
 
         _hotbar.Select(newIndex);
+    }
+
+    GameObject GetBlock(GameObject prefab, Vector3 pos)
+    {
+        if(blockPool.Count > 0)
+        {
+            GameObject block = blockPool.Dequeue();
+            block.transform.position = pos;
+            block.SetActive(true);
+            return block;
+        }
+        else
+        {
+            return Instantiate(prefab, pos, Quaternion.identity);
+        }
     }
 }
