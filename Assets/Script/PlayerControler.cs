@@ -95,7 +95,7 @@ public class PlayerControler : MonoBehaviour
     // --- ブロック設置 ---
     public void PlaceBlock(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
+        if (!context.started) return;
 
         Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
 
