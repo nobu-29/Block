@@ -77,7 +77,7 @@ public class BlockWorld : MonoBehaviour
 
                 foreach(Transform child in chunkTransform)
                 {
-                    if (child != null) continue;
+                    if (child == null) continue;
 
                     GameObject obj = child.gameObject;
                     if (obj == null) continue;
@@ -172,6 +172,7 @@ public class BlockWorld : MonoBehaviour
 
         Transform chunkTransform = chunks[chunkPos].transform;
 
+        //--”j‰ó--
         if (blockID == 0)
         {
             foreach(Transform child in chunkTransform)
