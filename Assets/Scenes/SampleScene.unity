@@ -2950,6 +2950,8 @@ MonoBehaviour:
   _playerInventory: {fileID: 11400000, guid: bff980be3b3c1984ea4468be4a8af91d, type: 2}
   reachDistance: 5
   blockchunk: {fileID: 519323031}
+  cubeMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  outlineMaterial: {fileID: 2100000, guid: 194d6a1db4c053e4e93f4d8ae6596a26, type: 2}
   _isDash: 1
 --- !u!114 &1923960916
 MonoBehaviour:

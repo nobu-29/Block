@@ -15,6 +15,8 @@ public class PlayerControler : MonoBehaviour
 
     public float reachDistance = 5f; // ブロックの届く距離
     public BlockWorld blockchunk;   //破壊・設置対象のチャンク
+    public Mesh cubeMesh;              // Cube の Mesh（Unity のデフォルトでOK）
+    public Material outlineMaterial;   // 上で作ったシェーダーのマテリアル
 
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
@@ -156,5 +158,30 @@ public class PlayerControler : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    void OnRenderObject()
+    {
+        DrawBlockOutline();
+    }
+
+    void DrawBlockOutline()
+    {
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        {
+            Vector3 hitPos = hit.point - hit.normal * 0.01f;
+            Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
+
+            // ブロックの中心に合わせる
+            Vector3 center = blockPos + Vector3.one * 0.5f;
+
+            // 少し大きめにして枠線が見えるようにする
+            Matrix4x4 matrix = Matrix4x4.TRS(center, Quaternion.identity, Vector3.one * 1.01f);
+
+            outlineMaterial.SetPass(0);
+            Graphics.DrawMeshNow(cubeMesh, matrix);
+        }
     }
 }
