@@ -15,17 +15,14 @@ public class PlayerControler : MonoBehaviour
 
     public float reachDistance = 5f; // ブロックの届く距離
     public BlockWorld blockchunk;   //破壊・設置対象のチャンク
-    public GameObject highlightPrefab;
 
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
     private Vector2 moveInput;
-    private GameObject highlightobj;
 
     private void Start()
     {
-        highlightobj = Instantiate(highlightPrefab);
-        highlightobj.SetActive(false);
+
     }
 
     void Update()
@@ -47,7 +44,6 @@ public class PlayerControler : MonoBehaviour
         float speed = _isDash ? MoveSpeed * MoveBoost : MoveSpeed;
         _rb.MovePosition(transform.position + move * speed * Time.deltaTime);
         //transform.Translate(move * speed * Time.deltaTime, Space.World);
-        UpdateHighlight();
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -147,21 +143,18 @@ public class PlayerControler : MonoBehaviour
         _hotbar.Select(newIndex);
     }
 
-    void UpdateHighlight()
+    bool TryGetTargetBlock(out Vector3Int blockPos)
     {
+        blockPos = default;
+
         Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
             Vector3 hitPos = hit.point - hit.normal * 0.01f;
-            Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
-
-            highlightobj.SetActive(true);
-            highlightobj.transform.position = blockPos + Vector3.one * 0.5f;
+            blockPos = Vector3Int.FloorToInt(hitPos);
+            return true;
         }
-        else
-        {
-            highlightobj.SetActive(false);
-        }
+        return false;
     }
 }
