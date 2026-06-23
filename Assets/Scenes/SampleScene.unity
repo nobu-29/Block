@@ -1371,6 +1371,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dirt
       objectReference: {fileID: 0}
+    - target: {fileID: 2612049275117098324, guid: cd5a94a68ee26a5489f5b3f7ddb95855, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9035454320017429874, guid: cd5a94a68ee26a5489f5b3f7ddb95855, type: 3}
       propertyPath: m_LocalPosition.x
       value: -14.43
@@ -2916,7 +2920,7 @@ GameObject:
   - component: {fileID: 1923960922}
   - component: {fileID: 1923960921}
   - component: {fileID: 1923960920}
-  - component: {fileID: 1923960919}
+  - component: {fileID: 1923960924}
   - component: {fileID: 1923960917}
   - component: {fileID: 1923960916}
   - component: {fileID: 1923960915}
@@ -2950,7 +2954,7 @@ MonoBehaviour:
   _playerInventory: {fileID: 11400000, guid: bff980be3b3c1984ea4468be4a8af91d, type: 2}
   reachDistance: 5
   blockchunk: {fileID: 519323031}
-  cubeMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  cubeMesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   outlineMaterial: {fileID: 2100000, guid: 194d6a1db4c053e4e93f4d8ae6596a26, type: 2}
   _isDash: 1
 --- !u!114 &1923960916
@@ -3154,27 +3158,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!65 &1923960919
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1923960914}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 0.5, z: 1}
-  m_Center: {x: 0, y: -0.24, z: 0}
 --- !u!23 &1923960920
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3259,6 +3242,29 @@ MonoBehaviour:
   playerBody: {fileID: 1923960922}
   _playerCamera: {fileID: 1210267262}
   sensitivity: 20
+--- !u!136 &1923960924
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1923960914}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1945902033
 GameObject:
   m_ObjectHideFlags: 0
@@ -4079,6 +4085,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stone
       objectReference: {fileID: 0}
+    - target: {fileID: 5271034238063244034, guid: 401d8dc74243cff4c945b764885a8b7f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4095,6 +4105,10 @@ PrefabInstance:
     - target: {fileID: 5757061647862183185, guid: a20ec64c44e5f634486029003d604fab, type: 3}
       propertyPath: m_Name
       value: Grass
+      objectReference: {fileID: 0}
+    - target: {fileID: 5757061647862183185, guid: a20ec64c44e5f634486029003d604fab, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7309300615705768739, guid: a20ec64c44e5f634486029003d604fab, type: 3}
       propertyPath: m_LocalPosition.x
