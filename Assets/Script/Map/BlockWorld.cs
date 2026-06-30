@@ -109,6 +109,8 @@ public class BlockWorld : MonoBehaviour
     {
         GameObject chunkObj = new GameObject($"Chunk_{chunkPos.x}_{chunkPos.y}");
 
+        var chunkMesh = chunkObj.AddComponent<ChunkMeshWorld>();
+
         for (int x = 0; x < chunkSize; x++)
         {
             for (int z = 0; z < chunkSize; z++)
@@ -121,7 +123,15 @@ public class BlockWorld : MonoBehaviour
 
                 for (int y = 0; y <= h; y++)
                 {
-                    Vector3Int blockpos = new Vector3Int(worldX, y, worldZ);
+
+                    if (y == h)
+                        chunkMesh.blocks[x, y, z] = 1; // ëê
+                    else if (y > h - 3)
+                        chunkMesh.blocks[x, y, z] = 2; // ìy
+                    else
+                        chunkMesh.blocks[x, y, z] = 3; // êŒ
+
+                   /* Vector3Int blockpos = new Vector3Int(worldX, y, worldZ);
 
                     int ID;
 
@@ -147,10 +157,12 @@ public class BlockWorld : MonoBehaviour
                     GameObject prefab = GetPrefabID(ID);
                     GameObject block = GetBlock(prefab,blockpos);
                     block.transform.parent = chunkObj.transform;
-                    block.isStatic = true;
+                    block.isStatic = true;*/
                 }
             }
         }
+
+        chunkMesh.BuildMesh();
 
         chunks.Add(chunkPos, chunkObj);
     }
@@ -163,41 +175,21 @@ public class BlockWorld : MonoBehaviour
                 Mathf.FloorToInt((float)worldPos.z / chunkSize)
         );
 
-        if (!_chunkDatas.ContainsKey(chunkPos))
-            _chunkDatas[chunkPos] = new ChunkData();
+        if (!_chunkDatas.ContainsKey(chunkPos)) return;
 
-        _chunkDatas[chunkPos].modifiedBlocks[worldPos] = blockID;
+        var chunkMesh = chunks[chunkPos].GetComponent<ChunkMeshWorld>();
 
-        if (!chunks.ContainsKey(chunkPos)) return;
 
-        Transform chunkTransform = chunks[chunkPos].transform;
+        int x = worldPos.x % chunkSize;
+        int y = worldPos.y;
+        int z = worldPos.z % chunkSize;
 
-        //--îjâÛ--
-        if (blockID == 0)
-        {
-            foreach(Transform child in chunkTransform)
-            {
-                    if (child == null) continue;
+        // îzóÒÇèëÇ´ä∑Ç¶
+        chunkMesh.blocks[x, y, z] = blockID;
 
-                    if(Vector3Int.FloorToInt(child.position) == worldPos)
-                {
-                    child.gameObject.SetActive(false);
-                    blockPool.Enqueue(child.gameObject);
-                    return;
-                }
-            }
+        // ÉÅÉbÉVÉÖÇçƒê∂ê¨
+        chunkMesh.BuildMesh();
 
-/*            Destroy(chunks[chunkPos]);
-            chunks.Remove(chunkPos);*/
-        }
-        else
-        {
-            GameObject prefab = GetPrefabID(blockID);
-            GameObject block = GetBlock(prefab, worldPos);
-            block.transform.parent = chunkTransform;
-        }
-
-        GenerateChunk(chunkPos);
     }
 
     GameObject GetPrefabID(int ID)
