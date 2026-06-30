@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerControler : MonoBehaviour
 {
@@ -15,12 +15,11 @@ public class PlayerControler : MonoBehaviour
 
     public float reachDistance = 5f; // ブロックの届く距離
     public BlockWorld blockchunk;   //破壊・設置対象のチャンク
-    public Mesh cubeMesh;              // Cube の Mesh（Unity のデフォルトでOK）
-    public Material outlineMaterial;   // 上で作ったシェーダーのマテリアル
 
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
     private Vector2 moveInput;
+    private Outline currentOutline;
 
     private void Start()
     {
@@ -46,6 +45,8 @@ public class PlayerControler : MonoBehaviour
         float speed = _isDash ? MoveSpeed * MoveBoost : MoveSpeed;
         _rb.MovePosition(transform.position + move * speed * Time.deltaTime);
         //transform.Translate(move * speed * Time.deltaTime, Space.World);
+
+        HandleOutline();
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -160,28 +161,29 @@ public class PlayerControler : MonoBehaviour
         return false;
     }
 
-    void OnRenderObject()
-    {
-        DrawBlockOutline();
-    }
-
-    void DrawBlockOutline()
+    void HandleOutline()
     {
         Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
-            Vector3 hitPos = hit.point - hit.normal * 0.01f;
-            Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
+            Outline outline = hit.collider.GetComponent<Outline>();
+            if(outline != null)
+            {
+                if (currentOutline != null && currentOutline != outline)
+                    currentOutline.enabled = false;
 
-            // ブロックの中心に合わせる
-            Vector3 center = blockPos + Vector3.one * 0.5f;
+                outline.enabled = true;
+                currentOutline = outline;
 
-            // 少し大きめにして枠線が見えるようにする
-            Matrix4x4 matrix = Matrix4x4.TRS(center, Quaternion.identity, Vector3.one * 1.01f);
+                return;
+            }
+        }
 
-            outlineMaterial.SetPass(0);
-            Graphics.DrawMeshNow(cubeMesh, matrix);
+        if(currentOutline != null)
+        {
+            currentOutline.enabled = false;
+            currentOutline = null;
         }
     }
 }
