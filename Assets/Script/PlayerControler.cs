@@ -93,7 +93,7 @@ public class PlayerControler : MonoBehaviour
                 Vector3 hitPos = hit.point - hit.normal * 0.01f;
                 Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
                 blockchunk.ModifyBlock(blockPos, 0);
-                blockchunk.ReturnBlock(hit.collider.gameObject);
+                //blockchunk.ReturnBlock(hit.collider.gameObject);
             }
         }
         _hotbar.UpdateUI();
@@ -146,7 +146,7 @@ public class PlayerControler : MonoBehaviour
         _hotbar.Select(newIndex);
     }
 
-    bool TryGetTargetBlock(out Vector3Int blockPos)
+/*    bool TryGetTargetBlock(out Vector3Int blockPos)
     {
         blockPos = default;
 
@@ -159,7 +159,7 @@ public class PlayerControler : MonoBehaviour
             return true;
         }
         return false;
-    }
+    }*/
 
     void HandleOutline()
     {

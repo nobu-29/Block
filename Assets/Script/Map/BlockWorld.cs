@@ -9,19 +9,20 @@ public class ChunkData
 
 public class BlockWorld : MonoBehaviour
 {
-    public GameObject DirtPF;
+/*    public GameObject DirtPF;
     public GameObject GrassPF;
-    public GameObject StonePF;
+    public GameObject StonePF;*/
 
     public Transform _player;
     public int chunkSize = 16;
     public int viewDistance = 2;
-    [Header("チャンク数")]public int worldSize = 4;   //チャンク数
+    [Header("チャンク数")]
+    public int worldSize = 4;   //チャンク数
     public int maxheight = 16;
     public float noiseScale = 0.1f;
     public float heightMultiplier = 5f;
+    public Dictionary<Vector2Int, GameObject> chunks = new Dictionary<Vector2Int, GameObject>();
 
-    private Dictionary<Vector2Int, GameObject> chunks = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, ChunkData> _chunkDatas = new Dictionary<Vector2Int, ChunkData>();
     private Vector2Int currentPlayerChunk;
     private Queue<GameObject> blockPool = new Queue<GameObject>();
@@ -68,25 +69,12 @@ public class BlockWorld : MonoBehaviour
         // 不要チャンク削除
         List<Vector2Int> toRemove = new List<Vector2Int>();
 
-        foreach (var chunk in chunks)
-        {
+
+        foreach(var chunk in chunks)
+{
             if (!neededChunks.Contains(chunk.Key))
             {
-                GameObject chunkobj = chunk.Value;
-                Transform chunkTransform = chunkobj.transform; 
-
-                foreach(Transform child in chunkTransform)
-                {
-                    if (child == null) continue;
-
-                    GameObject obj = child.gameObject;
-                    if (obj == null) continue;
-
-                    child.gameObject.SetActive(false);
-                    blockPool.Enqueue(child.gameObject);
-                }
-
-                Destroy(chunkobj);
+                chunk.Value.SetActive(false);
                 toRemove.Add(chunk.Key);
             }
         }
@@ -95,6 +83,7 @@ public class BlockWorld : MonoBehaviour
         {
             chunks.Remove(pos);
         }
+
     }
 
     Vector2Int GetPlayerChunk()
@@ -107,6 +96,14 @@ public class BlockWorld : MonoBehaviour
 
     void GenerateChunk(Vector2Int chunkPos)
     {
+
+        if (chunks.ContainsKey(chunkPos))
+        {
+            chunks[chunkPos].SetActive(true);
+            return;
+        }
+
+
         GameObject chunkObj = new GameObject($"Chunk_{chunkPos.x}_{chunkPos.y}");
 
         var chunkMesh = chunkObj.AddComponent<ChunkMeshWorld>();
@@ -165,6 +162,14 @@ public class BlockWorld : MonoBehaviour
         chunkMesh.BuildMesh();
 
         chunks.Add(chunkPos, chunkObj);
+
+
+        chunkObj.transform.position = new Vector3(
+            chunkPos.x * chunkSize,
+            0,
+            chunkPos.y * chunkSize
+        );
+
     }
 
     public void ModifyBlock(Vector3Int worldPos,int blockID)
@@ -175,24 +180,22 @@ public class BlockWorld : MonoBehaviour
                 Mathf.FloorToInt((float)worldPos.z / chunkSize)
         );
 
-        if (!_chunkDatas.ContainsKey(chunkPos)) return;
+        if(!chunks.ContainsKey(chunkPos)) return;
 
         var chunkMesh = chunks[chunkPos].GetComponent<ChunkMeshWorld>();
 
-
-        int x = worldPos.x % chunkSize;
+        int x = ((worldPos.x % chunkSize) + chunkSize) % chunkSize;
         int y = worldPos.y;
-        int z = worldPos.z % chunkSize;
+        int z = ((worldPos.z % chunkSize) + chunkSize) % chunkSize;
 
-        // 配列を書き換え
         chunkMesh.blocks[x, y, z] = blockID;
 
-        // メッシュを再生成
         chunkMesh.BuildMesh();
+
 
     }
 
-    GameObject GetPrefabID(int ID)
+/*    GameObject GetPrefabID(int ID)
     {
         switch (ID)
         {
@@ -204,9 +207,9 @@ public class BlockWorld : MonoBehaviour
                 return null;
 
         }
-    }
+    }*/
 
-    GameObject GetBlock(GameObject prefab, Vector3 pos)
+/*    GameObject GetBlock(GameObject prefab, Vector3 pos)
     {
         while (blockPool.Count > 0)
         {
@@ -219,11 +222,11 @@ public class BlockWorld : MonoBehaviour
             return block;
         }
         return Instantiate(prefab, pos, Quaternion.identity);
-    }
+    }*/
 
-    public void ReturnBlock(GameObject block)
+/*    public void ReturnBlock(GameObject block)
     {
         block.SetActive(false);
         blockPool.Enqueue(block);
-    }
+    }*/
 }
