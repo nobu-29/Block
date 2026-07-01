@@ -198,38 +198,40 @@ public class BlockWorld : MonoBehaviour
 
     }
 
-/*    GameObject GetPrefabID(int ID)
-    {
-        switch (ID)
+    /*    GameObject GetPrefabID(int ID)
         {
-            case 1: return GrassPF;
-            case 2: return DirtPF;
-            case 3: return StonePF;
-            default:
-                Debug.LogError("Unknown Block ID:" + ID);
-                return null;
+            switch (ID)
+            {
+                case 1: return GrassPF;
+                case 2: return DirtPF;
+                case 3: return StonePF;
+                default:
+                    Debug.LogError("Unknown Block ID:" + ID);
+                    return null;
 
-        }
-    }*/
+            }
+        }*/
 
-/*    GameObject GetBlock(GameObject prefab, Vector3 pos)
+    public int GetBlock(Vector3Int worldPos)
     {
-        while (blockPool.Count > 0)
+        Vector2Int chunkPos = new Vector2Int(Mathf.FloorToInt((float)worldPos.x / chunkSize),Mathf.FloorToInt((float)worldPos.z / chunkSize));
+
+        if (!chunks.ContainsKey(chunkPos)) return 0;
+
+        var chunkMesh = chunks[chunkPos].GetComponent<ChunkMeshWorld>();
+
+
+        int x = ((worldPos.x % chunkSize) + chunkSize) % chunkSize;
+        int y = worldPos.y;
+        int z = ((worldPos.z % chunkSize) + chunkSize) % chunkSize;
+
+        return chunkMesh.blocks[x, y, z];
+
+    }
+
+    /*    public void ReturnBlock(GameObject block)
         {
-            GameObject block = blockPool.Dequeue();
-
-            if(block == null) continue;
-
-            block.transform.position = pos;
-            block.SetActive(true);
-            return block;
-        }
-        return Instantiate(prefab, pos, Quaternion.identity);
-    }*/
-
-/*    public void ReturnBlock(GameObject block)
-    {
-        block.SetActive(false);
-        blockPool.Enqueue(block);
-    }*/
+            block.SetActive(false);
+            blockPool.Enqueue(block);
+        }*/
 }

@@ -80,4 +80,16 @@ public class HotbarMG : MonoBehaviour
         return null;
     }
 
+    public ItemObject GetItemByID(int id)
+    {
+        foreach (var slot in slots)
+        {
+            if (slot.item != null && slot.item.blockID == id)
+            {
+                return slot.item;
+            }
+        }
+        return null;
+    }
+
 }

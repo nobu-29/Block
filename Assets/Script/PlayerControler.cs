@@ -92,6 +92,17 @@ public class PlayerControler : MonoBehaviour
             Vector3 hitPos = hit.point - hit.normal * 0.01f;
             Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
 
+            int blockID = blockchunk.GetBlock(blockPos);
+
+            if (blockID == 0) return;
+
+
+            // ÉAÉCÉeÉÄéÊìæ
+            ItemObject item = _hotbar.GetItemByID(blockID); // Å©å„Ç≈ê‡ñæ
+            if (item != null)
+                _playerInventory.itemGet(item);
+
+
             blockchunk.ModifyBlock(blockPos, 0);
         }
         _hotbar.UpdateUI();
