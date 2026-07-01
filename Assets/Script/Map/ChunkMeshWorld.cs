@@ -22,6 +22,12 @@ public class ChunkMeshWorld : MonoBehaviour
         blocks = new int[_chunkSize, height, _chunkSize];
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+
+        if(_material == null)
+        {
+            Debug.LogError("MaterialÇ™ê›íËÇ≥ÇÍÇƒÇ¢Ç»Ç¢ÇÊÅI!");
+            return;
+        }
         GetComponent<MeshRenderer>().material = _material;
     }
 
@@ -57,7 +63,6 @@ public class ChunkMeshWorld : MonoBehaviour
         mesh.RecalculateNormals();
 
         GetComponent<MeshCollider>().sharedMesh = mesh;
-
     }
 
 
@@ -149,12 +154,12 @@ public class ChunkMeshWorld : MonoBehaviour
     {
         float size = 0.25f;
 
-        return new Vector2(x * size, y * size);
+        return new Vector2(x * size, (3 - y) * size);
     }
 
     Vector2 GetUVByFace(int id, Vector3 dir)
     {
-        float size = 0.25f;
+        //float size = 0.25f;
 
         if(id == 1)
         {

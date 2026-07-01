@@ -9,9 +9,10 @@ public class ChunkData
 
 public class BlockWorld : MonoBehaviour
 {
-/*    public GameObject DirtPF;
-    public GameObject GrassPF;
-    public GameObject StonePF;*/
+    /*    public GameObject DirtPF;
+        public GameObject GrassPF;
+        public GameObject StonePF;*/
+    public GameObject chunkPrefab;
 
     public Transform _player;
     public int chunkSize = 16;
@@ -104,9 +105,11 @@ public class BlockWorld : MonoBehaviour
         }
 
 
-        GameObject chunkObj = new GameObject($"Chunk_{chunkPos.x}_{chunkPos.y}");
+        GameObject chunkObj = Instantiate(chunkPrefab);
 
-        var chunkMesh = chunkObj.AddComponent<ChunkMeshWorld>();
+        chunkObj.name = $"Chunk_{chunkPos.x}_{chunkPos.y}";
+
+        var chunkMesh = chunkObj.GetComponent<ChunkMeshWorld>();
 
         for (int x = 0; x < chunkSize; x++)
         {
