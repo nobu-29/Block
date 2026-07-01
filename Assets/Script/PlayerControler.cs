@@ -19,34 +19,34 @@ public class PlayerControler : MonoBehaviour
     public Material _outlineMaterial;
     public Mesh cubeMesh;
 
+    public CraftingUI _craftingUI;
+
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
+    //private bool _isGround = false;
     private Vector2 moveInput;
     private Outline currentOutline;
 
-    private void Start()
+    void FixedUpdate()
     {
+        _isJump = CheckGrounded();
 
-    }
-
-    void Update()
-    {
         // カメラの向きを基準に移動方向を作る
-        Vector3 forward = _camera.transform.forward;
-        Vector3 right = _camera.transform.right;
+        Vector3 forward = transform.forward;
+        Vector3 right = transform.right;
 
         // 上下方向の成分を消す（地面を滑るように移動するため）
         forward.y = 0;
         right.y = 0;
 
-        forward.Normalize();
-        right.Normalize();
+    /*    forward.Normalize();
+        right.Normalize();*/
 
         // 入力に応じて移動方向を決定
         Vector3 move = forward * moveInput.y + right * moveInput.x;
 
         float speed = _isDash ? MoveSpeed * MoveBoost : MoveSpeed;
-        _rb.MovePosition(transform.position + move * speed * Time.deltaTime);
+        _rb.MovePosition(transform.position + move * speed * Time.fixedDeltaTime);
         //transform.Translate(move * speed * Time.deltaTime, Space.World);
 
         DrawBlockOutline();
@@ -65,21 +65,23 @@ public class PlayerControler : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (context.performed && _isJump)
+        if (!context.performed) return;
+        
+        if (!_isJump)
         {
             _rb.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
             _isJump = false;
         }
         
     }
-    private void OnCollisionEnter(Collision collision)
+/*    private void OnCollisionEnter(Collision collision)
     {
-/*        if(collision.gameObject.layer == "Block")
+       if(collision.gameObject.layer == "Block")
         {
 
-        }*/
+        }
          _isJump = true;
-    }
+    }*/
 
     // --- ブロック破壊 ---
     public void BreakBlock(InputAction.CallbackContext context)
@@ -152,6 +154,12 @@ public class PlayerControler : MonoBehaviour
         _hotbar.Select(newIndex);
     }
 
+    bool CheckGrounded()
+    {
+        float checkDistance = 0.2f;
+        return Physics.Raycast(transform.position, Vector3.down, checkDistance,LayerMask.GetMask("Block"));
+    }
+
 /*    bool TryGetTargetBlock(out Vector3Int blockPos)
     {
         blockPos = default;
@@ -208,5 +216,14 @@ public class PlayerControler : MonoBehaviour
             _outlineMaterial.SetPass(0);
             Graphics.DrawMeshNow(cubeMesh, matrix);
         }
+    }
+    public void CraftAdd(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        ItemObject selected = _hotbar.GetSelectedItem();
+        if (selected == null) return;
+
+        _craftingUI.AddItem(selected);
     }
 }
