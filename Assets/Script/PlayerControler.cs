@@ -19,8 +19,6 @@ public class PlayerControler : MonoBehaviour
     public Material _outlineMaterial;
     public Mesh cubeMesh;
 
-    public CraftingUI _craftingUI;
-
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
     //private bool _isGround = false;
@@ -39,8 +37,8 @@ public class PlayerControler : MonoBehaviour
         forward.y = 0;
         right.y = 0;
 
-    /*    forward.Normalize();
-        right.Normalize();*/
+        /*    forward.Normalize();
+            right.Normalize();*/
 
         // ì¸óÕÇ…âûÇ∂Çƒà⁄ìÆï˚å¸ÇåàíË
         Vector3 move = forward * moveInput.y + right * moveInput.x;
@@ -66,30 +64,30 @@ public class PlayerControler : MonoBehaviour
     public void Jump(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
-        
+
         if (!_isJump)
         {
             _rb.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
             _isJump = false;
         }
-        
-    }
-/*    private void OnCollisionEnter(Collision collision)
-    {
-       if(collision.gameObject.layer == "Block")
-        {
 
-        }
-         _isJump = true;
-    }*/
+    }
+    /*    private void OnCollisionEnter(Collision collision)
+        {
+           if(collision.gameObject.layer == "Block")
+            {
+
+            }
+             _isJump = true;
+        }*/
 
     // --- ÉuÉçÉbÉNîjâÛ ---
     public void BreakBlock(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
 
-        Ray ray = new Ray(_camera.transform.position,_camera.transform.forward);
-        if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
             Vector3 hitPos = hit.point - hit.normal * 0.01f;
             Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
@@ -125,7 +123,7 @@ public class PlayerControler : MonoBehaviour
 
             ItemObject item = _hotbar.GetSelectedItem();
 
-            if(item != null && _playerInventory.ItemHas(item))
+            if (item != null && _playerInventory.ItemHas(item))
             {
                 blockchunk.ModifyBlock(blockPos, item.blockID);
 
@@ -141,8 +139,8 @@ public class PlayerControler : MonoBehaviour
         if (!context.performed) return;
 
         int newIndex = _hotbar.selectedIndex - 1;
-        if(newIndex < 0) newIndex = _hotbar.slots.Length - 1;
-        
+        if (newIndex < 0) newIndex = _hotbar.slots.Length - 1;
+
         _hotbar.Select(newIndex);
     }
     public void UIMoveRight(InputAction.CallbackContext context)
@@ -157,32 +155,32 @@ public class PlayerControler : MonoBehaviour
     bool CheckGrounded()
     {
         float checkDistance = 0.2f;
-        return Physics.Raycast(transform.position, Vector3.down, checkDistance,LayerMask.GetMask("Block"));
+        return Physics.Raycast(transform.position, Vector3.down, checkDistance, LayerMask.GetMask("Block"));
     }
 
-/*    bool TryGetTargetBlock(out Vector3Int blockPos)
-    {
-        blockPos = default;
-
-        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
-
-        if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+    /*    bool TryGetTargetBlock(out Vector3Int blockPos)
         {
-            Vector3 hitPos = hit.point - hit.normal * 0.01f;
-            blockPos = Vector3Int.FloorToInt(hitPos);
-            return true;
-        }
-        return false;
-    }*/
+            blockPos = default;
+
+            Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+
+            if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+            {
+                Vector3 hitPos = hit.point - hit.normal * 0.01f;
+                blockPos = Vector3Int.FloorToInt(hitPos);
+                return true;
+            }
+            return false;
+        }*/
 
     void HandleOutline()
     {
         Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
 
-        if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
             Outline outline = hit.collider.GetComponent<Outline>();
-            if(outline != null)
+            if (outline != null)
             {
                 if (currentOutline != null && currentOutline != outline)
                     currentOutline.enabled = false;
@@ -194,7 +192,7 @@ public class PlayerControler : MonoBehaviour
             }
         }
 
-        if(currentOutline != null)
+        if (currentOutline != null)
         {
             currentOutline.enabled = false;
             currentOutline = null;
@@ -205,7 +203,7 @@ public class PlayerControler : MonoBehaviour
     {
         Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
 
-        if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
             Vector3 hitPos = hit.point - hit.normal * 0.01f;
             Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
@@ -224,6 +222,6 @@ public class PlayerControler : MonoBehaviour
         ItemObject selected = _hotbar.GetSelectedItem();
         if (selected == null) return;
 
-        _craftingUI.AddItem(selected);
+        //_craftingUI.AddItem(selected);
     }
 }
