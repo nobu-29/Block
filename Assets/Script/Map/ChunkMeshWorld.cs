@@ -231,7 +231,12 @@ public class ChunkMeshWorld : MonoBehaviour
 
         // Š²
         else if (id == 4)
-            return GetUV(2, 2);
+        {
+            if (dir == Vector3.up || dir == Vector3.down)
+                return GetUV(0, 3);
+            else
+                return GetUV(2, 2);
+        }
 
         // —t
         else if (id == 5)
