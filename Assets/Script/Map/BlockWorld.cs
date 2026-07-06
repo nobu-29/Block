@@ -171,7 +171,13 @@ public class BlockWorld : MonoBehaviour
                         if(!isDesert) TrySpawnTree(chunkMesh, x, y, z);
                     }
                     else if (y > h - 3)
-                        chunkMesh.blocks[x, localY, z] = 2; // ìy
+                    {
+
+                        if(isDesert)
+                            chunkMesh.blocks[x, localY, z] = 14; // çª
+                        else
+                            chunkMesh.blocks[x, localY, z] = 2; // ìy
+                    }
                     else if(y < h - 5)
                     {
 
