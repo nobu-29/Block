@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myinventory:
   - item: {fileID: 11400000, guid: ed487e70d8b15e94191ac37f37bd0eb5, type: 2}
-    count: 10
+    count: 25
   - item: {fileID: 11400000, guid: 9cc12e4ae0463004b9cea75030c77e9e, type: 2}
-    count: 9
+    count: 36
   - item: {fileID: 11400000, guid: 298de847ceed3ed479ccf472f12b5d31, type: 2}
-    count: 4
+    count: 75
+  - item: {fileID: 11400000, guid: 5ab5545ebb61e4d4f9fe2d50aca3bd40, type: 2}
+    count: 59
   maxStack: 100

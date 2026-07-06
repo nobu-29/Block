@@ -205,6 +205,7 @@ public class ChunkMeshWorld : MonoBehaviour
         return new Vector2(x * size, (3 - y) * size);
     }
 
+    //↓ブロックに使うメッシュの設定箇所
     Vector2 GetUVByFace(int id, Vector3 dir)
     {
         //float size = 0.25f;
@@ -227,6 +228,14 @@ public class ChunkMeshWorld : MonoBehaviour
         // 石
         else if (id == 3)
             return GetUV(1, 0);
+
+        // 幹
+        else if (id == 4)
+            return GetUV(2, 2);
+
+        // 葉
+        else if (id == 5)
+            return GetUV(3, 2);
 
         //砂（ケイ素の元素番号14）
         else if (id ==14)

@@ -23,7 +23,9 @@ public class BlockWorld : MonoBehaviour
     public int worldMaxY = 64;
 
     public float noiseScale = 0.1f;
+    public float noiseScale_mini = 0.15f;
     public float heightMultiplier = 5f;
+    public float heightMultiplier_mini = 4f;
     public Dictionary<Vector2Int, ChunkMeshWorld> chunks = new Dictionary<Vector2Int, ChunkMeshWorld>();
 
     private Vector2Int currentPlayerChunk;
@@ -141,23 +143,51 @@ public class BlockWorld : MonoBehaviour
                 int worldX = x + chunkPos.x * chunkSize;
                 int worldZ = z + chunkPos.y * chunkSize;
 
-                float height = Mathf.PerlinNoise(worldX * noiseScale, worldZ * noiseScale) * heightMultiplier;
+                float height = Mathf.PerlinNoise(worldX * noiseScale, worldZ * noiseScale) * heightMultiplier + Mathf.PerlinNoise(worldX * noiseScale_mini, worldZ * noiseScale_mini) * heightMultiplier_mini;
+
+                //バイオーム生成用コード
+                float biomeNoise = Mathf.PerlinNoise(worldX * 0.01f, worldZ * 0.01f);
+
+                //砂漠にするかどうかの判定
+                bool isDesert = biomeNoise > 0.6f;
+
                 int h = Mathf.FloorToInt(height);
 
                 for (int y = worldMinY; y <= h; y++)
                 {
+                    float caveNoise = Mathf.PerlinNoise((worldX + 1000) * 0.08f, (worldZ + y) * 0.08f);
+
                     int localY = chunkMesh.WorldYToLocalY(y);
 
                     if (y == worldMinY)
                         chunkMesh.blocks[x, localY, z] = 99; // 岩盤
                     else if(y == h)
                     {
-                        chunkMesh.blocks[x, localY, z] = 1; // 草
+                        if(isDesert)
+                            chunkMesh.blocks[x, localY, z] = 14; // 砂
+                        else
+                            chunkMesh.blocks[x, localY, z] = 1; // 草
+
+                        if(!isDesert) TrySpawnTree(chunkMesh, x, y, z);
                     }
                     else if (y > h - 3)
                         chunkMesh.blocks[x, localY, z] = 2; // 土
+                    else if(y < h - 5)
+                    {
+
+                        float oreNoise = Mathf.PerlinNoise(worldX * 0.2f, (worldZ + y) * 0.2f);
+
+                        if (oreNoise > 0.75f)
+                            chunkMesh.blocks[x, localY, z] = 26; // 鉄
+                        else
+                            chunkMesh.blocks[x, localY, z] = 3; // 石
+                    }
                     else
-                        chunkMesh.blocks[x, localY, z] = 3; // 石
+                    {
+                        if (caveNoise > 0.62f && y < h - 3) continue;
+
+                            chunkMesh.blocks[x, localY, z] = 3; // 石
+                    }
                 }
             }
         }
@@ -173,6 +203,51 @@ public class BlockWorld : MonoBehaviour
             0,
             chunkPos.y * chunkSize
         );
+
+    }
+
+    void TrySpawnTree(ChunkMeshWorld chunk, int x, int groundY, int z)
+    {
+        if (groundY < 2) return;
+
+        if (Random.Range(0f, 100f) > 2f)
+            return;
+
+        int trunkHeight = Random.Range(4, 7);
+
+        for (int i = 1; i <= trunkHeight; i++)
+        {
+            int ly = chunk.WorldYToLocalY(groundY + i);
+
+            if (ly >= chunk.height) return;
+
+            chunk.blocks[x, ly, z] = 4;
+        }
+
+        int leafCenter =
+            chunk.WorldYToLocalY(
+                groundY + trunkHeight
+            );
+
+        for (int lx = -2; lx <= 2; lx++)
+        {
+            for (int lz = -2; lz <= 2; lz++)
+            {
+                for (int ly = -2; ly <= 1; ly++)
+                {
+                    int nx = x + lx;
+                    int ny = leafCenter + ly;
+                    int nz = z + lz;
+
+                    if (nx < 0 || nx >= chunkSize) continue;
+                    if (nz < 0 || nz >= chunkSize) continue;
+                    if (ny < 0 || ny >= chunk.height) continue;
+
+                    if (chunk.blocks[nx, ny, nz] == 0)
+                        chunk.blocks[nx, ny, nz] = 5;
+                }
+            }
+        }
 
     }
 
