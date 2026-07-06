@@ -17,6 +17,14 @@ public class ChunkMeshWorld : MonoBehaviour
     List<Vector2> uv = new List<Vector2>();
     public Material _material;
 
+    private bool isDirty;
+
+    private MeshCollider _meshCollider;
+    private MeshFilter _meshFilter;
+    private MeshRenderer _meshRenderer;
+
+    private readonly Vector3[] quad = new Vector3[4];
+
     private void Awake()
     {
         blocks = new int[_chunkSize, height, _chunkSize];
@@ -28,7 +36,41 @@ public class ChunkMeshWorld : MonoBehaviour
             Debug.LogError("MaterialÇ™ê›íËÇ≥ÇÍÇƒÇ¢Ç»Ç¢ÇÊÅI!");
             return;
         }
-        GetComponent<MeshRenderer>().material = _material;
+
+        _meshFilter = GetComponent<MeshFilter>();
+        _meshRenderer = GetComponent<MeshRenderer>();
+        _meshCollider = GetComponent<MeshCollider>();
+
+        _meshFilter.mesh = mesh;
+        _meshRenderer.material = _material;
+    }
+
+    private void Update()
+    {
+        if (!isDirty) return;
+
+        BuildMesh();
+        isDirty = false;
+    }
+
+    public void SetDirty()
+    {
+        isDirty = true;
+    }
+
+    public void ClearChunk()
+    {
+
+        System.Array.Clear(blocks, 0, blocks.Length);
+
+        vertices.Clear();
+        triangles.Clear();
+        uv.Clear();
+
+        mesh.Clear();
+
+        _meshCollider.sharedMesh = null;
+
     }
 
     public void BuildMesh()
@@ -61,8 +103,10 @@ public class ChunkMeshWorld : MonoBehaviour
         mesh.triangles = triangles.ToArray();
         mesh.uv = uv.ToArray();
         mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
 
-        GetComponent<MeshCollider>().sharedMesh = mesh;
+        _meshCollider.sharedMesh = null;
+        _meshCollider.sharedMesh = mesh;
     }
 
 
@@ -85,8 +129,6 @@ public class ChunkMeshWorld : MonoBehaviour
     void AddFace(Vector3 pos, Vector3 dir,int blockID)
     {
         int v = vertices.Count;
-
-        Vector3[] quad = new Vector3[4];
 
         if (dir == Vector3.forward)
         {

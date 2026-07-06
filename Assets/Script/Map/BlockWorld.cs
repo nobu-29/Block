@@ -9,24 +9,21 @@ public class ChunkData
 
 public class BlockWorld : MonoBehaviour
 {
-    /*    public GameObject DirtPF;
-        public GameObject GrassPF;
-        public GameObject StonePF;*/
     public GameObject chunkPrefab;
 
     public Transform _player;
     public int chunkSize = 16;
     public int viewDistance = 2;
+
     [Header("チャンク数")]
     public int worldSize = 4;   //チャンク数
     public int maxheight = 16;
     public float noiseScale = 0.1f;
     public float heightMultiplier = 5f;
-    public Dictionary<Vector2Int, GameObject> chunks = new Dictionary<Vector2Int, GameObject>();
+    public Dictionary<Vector2Int, ChunkMeshWorld> chunks = new Dictionary<Vector2Int, ChunkMeshWorld>();
 
-    private Dictionary<Vector2Int, ChunkData> _chunkDatas = new Dictionary<Vector2Int, ChunkData>();
     private Vector2Int currentPlayerChunk;
-    private Queue<GameObject> blockPool = new Queue<GameObject>();
+    private Queue<GameObject> chunkPool = new Queue<GameObject>();
 
     private void Start()
     {
@@ -57,6 +54,8 @@ public class BlockWorld : MonoBehaviour
         {
             for (int z = -viewDistance; z <= viewDistance; z++)
             {
+                if ((x * x) + (z * z) >( viewDistance * viewDistance)) continue;
+
                 Vector2Int chunkPos = new Vector2Int(playerChunk.x + x, playerChunk.y + z);
                 neededChunks.Add(chunkPos);
 
@@ -75,7 +74,14 @@ public class BlockWorld : MonoBehaviour
 {
             if (!neededChunks.Contains(chunk.Key))
             {
-                chunk.Value.SetActive(false);
+                var chunkMesh = chunk.Value.GetComponent<ChunkMeshWorld>();
+
+                chunkMesh.ClearChunk();
+
+                chunk.Value.gameObject.SetActive(false);
+
+                chunkPool.Enqueue(chunk.Value.gameObject);
+
                 toRemove.Add(chunk.Key);
             }
         }
@@ -100,16 +106,29 @@ public class BlockWorld : MonoBehaviour
 
         if (chunks.ContainsKey(chunkPos))
         {
-            chunks[chunkPos].SetActive(true);
+            chunks[chunkPos].gameObject.SetActive(true);
             return;
         }
 
+        GameObject chunkObj;
 
-        GameObject chunkObj = Instantiate(chunkPrefab);
+        if (chunkPool.Count > 0)
+        {
+            chunkObj = chunkPool.Dequeue();
+
+            chunkObj.SetActive(true);
+        }
+        else
+        {
+            chunkObj = Instantiate(chunkPrefab);
+        }
 
         chunkObj.name = $"Chunk_{chunkPos.x}_{chunkPos.y}";
 
         var chunkMesh = chunkObj.GetComponent<ChunkMeshWorld>();
+
+        chunkMesh.blocks = new int[chunkMesh._chunkSize,chunkMesh.height,chunkMesh._chunkSize];
+
 
         for (int x = 0; x < chunkSize; x++)
         {
@@ -130,41 +149,14 @@ public class BlockWorld : MonoBehaviour
                         chunkMesh.blocks[x, y, z] = 2; // 土
                     else
                         chunkMesh.blocks[x, y, z] = 3; // 石
-
-                   /* Vector3Int blockpos = new Vector3Int(worldX, y, worldZ);
-
-                    int ID;
-
-                    if (_chunkDatas.ContainsKey(chunkPos) && 
-                        _chunkDatas[chunkPos].modifiedBlocks.ContainsKey(blockpos))
-                    {
-                        ID = _chunkDatas[chunkPos].modifiedBlocks[blockpos];
-                    }
-                    else
-                    {
-                        if (y == h)
-                            ID = 1;
-                        else if (y > h - 3)
-                            ID = 2;
-                        else
-                            ID = 3;
-
-                    }
-
-                    //壊されている
-                    if (ID == 0) continue;
-
-                    GameObject prefab = GetPrefabID(ID);
-                    GameObject block = GetBlock(prefab,blockpos);
-                    block.transform.parent = chunkObj.transform;
-                    block.isStatic = true;*/
                 }
             }
         }
 
-        chunkMesh.BuildMesh();
+        chunkMesh.SetDirty();
+        //chunkMesh.BuildMesh();
 
-        chunks.Add(chunkPos, chunkObj);
+        chunks.Add(chunkPos, chunkMesh);
 
 
         chunkObj.transform.position = new Vector3(
@@ -185,7 +177,7 @@ public class BlockWorld : MonoBehaviour
 
         if(!chunks.ContainsKey(chunkPos)) return;
 
-        var chunkMesh = chunks[chunkPos].GetComponent<ChunkMeshWorld>();
+        var chunkMesh = chunks[chunkPos];
 
         int x = ((worldPos.x % chunkSize) + chunkSize) % chunkSize;
         int y = worldPos.y;
@@ -193,24 +185,10 @@ public class BlockWorld : MonoBehaviour
 
         chunkMesh.blocks[x, y, z] = blockID;
 
-        chunkMesh.BuildMesh();
+        chunkMesh.SetDirty();
 
 
     }
-
-    /*    GameObject GetPrefabID(int ID)
-        {
-            switch (ID)
-            {
-                case 1: return GrassPF;
-                case 2: return DirtPF;
-                case 3: return StonePF;
-                default:
-                    Debug.LogError("Unknown Block ID:" + ID);
-                    return null;
-
-            }
-        }*/
 
     public int GetBlock(Vector3Int worldPos)
     {
@@ -218,12 +196,13 @@ public class BlockWorld : MonoBehaviour
 
         if (!chunks.ContainsKey(chunkPos)) return 0;
 
-        var chunkMesh = chunks[chunkPos].GetComponent<ChunkMeshWorld>();
-
+        var chunkMesh = chunks[chunkPos];
 
         int x = ((worldPos.x % chunkSize) + chunkSize) % chunkSize;
         int y = worldPos.y;
         int z = ((worldPos.z % chunkSize) + chunkSize) % chunkSize;
+
+        if (y < 0 || y >= maxheight) return 0;
 
         return chunkMesh.blocks[x, y, z];
 
