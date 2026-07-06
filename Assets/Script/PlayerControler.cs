@@ -99,7 +99,7 @@ public class PlayerControler : MonoBehaviour
 
 
             // ƒAƒCƒeƒ€æ“¾
-            ItemObject item = _hotbar.GetItemByID(blockID); // ©Œã‚Åà–¾
+            ItemObject item = _hotbar.GetItemByID(blockID); 
             if (item != null)
                 _playerInventory.itemGet(item);
 
