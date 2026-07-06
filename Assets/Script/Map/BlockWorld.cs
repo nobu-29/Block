@@ -18,6 +18,10 @@ public class BlockWorld : MonoBehaviour
     [Header("チャンク数")]
     public int worldSize = 4;   //チャンク数
     public int maxheight = 16;
+    [Header("ワールドの高さ設定")]
+    public int worldMinY = -32;
+    public int worldMaxY = 64;
+
     public float noiseScale = 0.1f;
     public float heightMultiplier = 5f;
     public Dictionary<Vector2Int, ChunkMeshWorld> chunks = new Dictionary<Vector2Int, ChunkMeshWorld>();
@@ -140,15 +144,20 @@ public class BlockWorld : MonoBehaviour
                 float height = Mathf.PerlinNoise(worldX * noiseScale, worldZ * noiseScale) * heightMultiplier;
                 int h = Mathf.FloorToInt(height);
 
-                for (int y = 0; y <= h; y++)
+                for (int y = worldMinY; y <= h; y++)
                 {
+                    int localY = chunkMesh.WorldYToLocalY(y);
 
-                    if (y == h)
-                        chunkMesh.blocks[x, y, z] = 1; // 草
+                    if (y == worldMinY)
+                        chunkMesh.blocks[x, localY, z] = 99; // 岩盤
+                    else if(y == h)
+                    {
+                        chunkMesh.blocks[x, localY, z] = 1; // 草
+                    }
                     else if (y > h - 3)
-                        chunkMesh.blocks[x, y, z] = 2; // 土
+                        chunkMesh.blocks[x, localY, z] = 2; // 土
                     else
-                        chunkMesh.blocks[x, y, z] = 3; // 石
+                        chunkMesh.blocks[x, localY, z] = 3; // 石
                 }
             }
         }
@@ -180,10 +189,15 @@ public class BlockWorld : MonoBehaviour
         var chunkMesh = chunks[chunkPos];
 
         int x = ((worldPos.x % chunkSize) + chunkSize) % chunkSize;
+
         int y = worldPos.y;
+        int localY = chunkMesh.WorldYToLocalY(y);
+
+        if (y < worldMinY || y >= worldMaxY) return;
+
         int z = ((worldPos.z % chunkSize) + chunkSize) % chunkSize;
 
-        chunkMesh.blocks[x, y, z] = blockID;
+        chunkMesh.blocks[x, localY, z] = blockID;
 
         chunkMesh.SetDirty();
 
@@ -199,12 +213,16 @@ public class BlockWorld : MonoBehaviour
         var chunkMesh = chunks[chunkPos];
 
         int x = ((worldPos.x % chunkSize) + chunkSize) % chunkSize;
+
         int y = worldPos.y;
+        int localY = chunkMesh.WorldYToLocalY(y);
+
+
         int z = ((worldPos.z % chunkSize) + chunkSize) % chunkSize;
 
-        if (y < 0 || y >= maxheight) return 0;
+        if (y < worldMinY || y >= worldMaxY) return 0;
 
-        return chunkMesh.blocks[x, y, z];
+        return chunkMesh.blocks[x, localY, z];
 
     }
 

@@ -6,7 +6,8 @@ using UnityEngine;
 public class ChunkMeshWorld : MonoBehaviour
 {
     public int _chunkSize = 16;
-    public int height = 48;
+    public int height = 96;
+    public int worldMinY = -32;
 
     public int[,,] blocks;
 
@@ -51,6 +52,11 @@ public class ChunkMeshWorld : MonoBehaviour
 
         BuildMesh();
         isDirty = false;
+    }
+
+    public int WorldYToLocalY (int worldY)
+    {
+        return worldY - worldMinY;
     }
 
     public void SetDirty()
@@ -123,7 +129,7 @@ public class ChunkMeshWorld : MonoBehaviour
             if (blocks[nx, ny, nz] != 0) return;
         }
 
-        AddFace(new Vector3(x, y, z), dir, blocks[x, y, z]);
+        AddFace(new Vector3(x, y + worldMinY, z), dir, blocks[x, y, z]);
     }
 
     void AddFace(Vector3 pos, Vector3 dir,int blockID)
@@ -203,7 +209,7 @@ public class ChunkMeshWorld : MonoBehaviour
     {
         //float size = 0.25f;
 
-        if(id == 1)
+        if (id == 1)
         {
 
             if (dir == Vector3.up)      // è„
@@ -211,16 +217,33 @@ public class ChunkMeshWorld : MonoBehaviour
             else if (dir == Vector3.down) // â∫
                 return GetUV(2, 0);     // ìy
             else                        // â°
-                return GetUV(1, 0);     // ëêë§ñ 
+                return GetUV(1, 2);     // ëêë§ñ 
         }
 
         // ìy
-        if (id == 2)
+        else if (id == 2)
             return GetUV(2, 0);
 
         // êŒ
-        if (id == 3)
+        else if (id == 3)
+            return GetUV(1, 0);
+
+        //çªÅiÉPÉCëfÇÃå≥ëfî‘çÜ14Åj
+        else if (id ==14)
             return GetUV(3, 0);
+
+        // ìSÅiå≥ëfî‘çÜ26Åj
+        else if (id == 26)
+            return GetUV(3, 1);
+
+        // ã‡Åiå≥ëfî‘çÜ79Åj
+        else if (id == 79)
+            return GetUV(0, 1);
+
+        // ä‚î’
+        else if (id == 99)
+            return GetUV(0, 2);
+
 
         return GetUV(0, 0);
 
