@@ -178,7 +178,9 @@ public class ChunkMeshWorld : MonoBehaviour
             ny >= 0 && ny < height &&
             nz >= 0 && nz < _chunkSize)
         {
-            if (blocks[nx, ny, nz] != 0) return;
+            int neighborID = blocks[nx, ny, nz];
+            //‰½‚à‚È‚¢‹ó‹C‚Æ…ˆÈŠO‚È‚ç‰B‚·
+            if (neighborID != 0 && neighborID != 8) return;
         }
 
         AddFace(new Vector3(x, y + worldMinY, z), dir, blocks[x, y, z]);
@@ -270,6 +272,8 @@ public class ChunkMeshWorld : MonoBehaviour
 
     void AddWaterFace(Vector3 pos, Vector3 dir)
     {
+        if (dir == Vector3.down) return;
+
         int v = waterVertices.Count;
 
         Vector3[] wQuad = new Vector3[4];
