@@ -61,6 +61,8 @@ public class PlayerControler : MonoBehaviour
 
         DrawBlockOutline();
         //HandleOutline();
+
+        if (IsInWater()) _rb.AddForce(Vector3.up * 5f, ForceMode.Force);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -77,7 +79,7 @@ public class PlayerControler : MonoBehaviour
     {
         if (!context.performed) return;
 
-        if (_isJump)
+        if (_isJump || IsInWater())
         {
             _rb.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
             _isJump = false;
@@ -246,5 +248,16 @@ public class PlayerControler : MonoBehaviour
         if (selected == null) return;
 
         //_craftingUI.AddItem(selected);
+    }
+
+    bool IsInWater()
+    {
+        Vector3Int blockPos =
+            Vector3Int.FloorToInt(transform.position);
+
+        int blockID =
+            blockchunk.GetBlock(blockPos);
+
+        return blockID == 8;
     }
 }

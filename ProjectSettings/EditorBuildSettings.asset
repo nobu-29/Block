@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/RanGoScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/CraftGameScene.unity
+    guid: 0f93a51d3b942b14fa377c624a1fa964
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: b1313ce4b8f12834b9ae218d2c53b17c, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: b49d4e74b59870147bbda727689f2376, type: 3}

@@ -254,7 +254,7 @@ public class BlockWorld : MonoBehaviour
                         else
                             chunkMesh.blocks[x, localY, z] = 1; // ‘
 
-                        if(!isDesert) TrySpawnTree(chunkMesh, x, y, z);
+                        if(!isDesert || !isSnow) TrySpawnTree(chunkMesh, x, y, z);
                     }
                     else if (y > h - 3)
                     {
