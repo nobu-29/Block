@@ -21,6 +21,7 @@ public class BlockWorld : MonoBehaviour
     [Header("ÉèÅ[ÉãÉhÇÃçÇÇ≥ê›íË")]
     public int worldMinY = -32;
     public int worldMaxY = 64;
+    public int seaLevel = 10;
 
     public float noiseScale = 0.1f;
     public float noiseScale_mini = 0.15f;
@@ -149,9 +150,13 @@ public class BlockWorld : MonoBehaviour
                 float biomeNoise = Mathf.PerlinNoise(worldX * 0.01f, worldZ * 0.01f);
 
                 //çªîôÇ…Ç∑ÇÈÇ©Ç«Ç§Ç©ÇÃîªíË
-                bool isDesert = biomeNoise > 0.6f;
+                bool isDesert = biomeNoise > 0.65f;
+
+                bool isSnow = biomeNoise < 0.25f;
 
                 int h = Mathf.FloorToInt(height);
+
+                if (!isDesert && h < seaLevel) h = seaLevel;
 
                 for (int y = worldMinY; y <= h; y++)
                 {
@@ -163,8 +168,10 @@ public class BlockWorld : MonoBehaviour
                         chunkMesh.blocks[x, localY, z] = 99; // ä‚î’
                     else if(y == h)
                     {
-                        if(isDesert)
+                        if (isDesert)
                             chunkMesh.blocks[x, localY, z] = 14; // çª
+                        else if (isSnow)
+                            chunkMesh.blocks[x, localY, z] = 9; //ê·
                         else
                             chunkMesh.blocks[x, localY, z] = 1; // ëê
 
@@ -175,6 +182,8 @@ public class BlockWorld : MonoBehaviour
 
                         if(isDesert)
                             chunkMesh.blocks[x, localY, z] = 14; // çª
+                        else if (isSnow)
+                            chunkMesh.blocks[x, localY, z] = 9; //ê·
                         else
                             chunkMesh.blocks[x, localY, z] = 2; // ìy
                     }
@@ -183,7 +192,9 @@ public class BlockWorld : MonoBehaviour
 
                         float oreNoise = Mathf.PerlinNoise(worldX * 0.2f, (worldZ + y) * 0.2f);
 
-                        if (oreNoise > 0.75f)
+                        if (oreNoise > 0.9f && y < -10)
+                            chunkMesh.blocks[x, localY, z] = 79; //ã‡
+                        else if (oreNoise > 0.75f)
                             chunkMesh.blocks[x, localY, z] = 26; // ìS
                         else
                             chunkMesh.blocks[x, localY, z] = 3; // êŒ
@@ -194,6 +205,13 @@ public class BlockWorld : MonoBehaviour
 
                             chunkMesh.blocks[x, localY, z] = 3; // êŒ
                     }
+                }
+
+                for (int waterY = h + 1; waterY <= seaLevel; waterY++)
+                {
+                    int localWaterY = chunkMesh.WorldYToLocalY(waterY);
+
+                    chunkMesh.blocks[x, localWaterY, z] = 8;
                 }
             }
         }
@@ -248,6 +266,13 @@ public class BlockWorld : MonoBehaviour
                     if (nx < 0 || nx >= chunkSize) continue;
                     if (nz < 0 || nz >= chunkSize) continue;
                     if (ny < 0 || ny >= chunk.height) continue;
+
+                    float distance = 
+                        lx * lx + 
+                        ly * ly + 
+                        lz * lz;
+
+                    if (distance > 6) continue;
 
                     if (chunk.blocks[nx, ny, nz] == 0)
                         chunk.blocks[nx, ny, nz] = 5;
