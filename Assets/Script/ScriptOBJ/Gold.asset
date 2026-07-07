@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b027b3d4470f7d54bb59b3156c98920e, type: 3}
+  m_Name: Gold
+  m_EditorClassIdentifier: 
+  icon: {fileID: 21300000, guid: 3adc4e5549e2e864ab8b406c5767a43e, type: 3}
+  ItemName: "\u91D1"
+  blockID: 79
+  blockPrefab: {fileID: 5757061647862183185, guid: a20ec64c44e5f634486029003d604fab, type: 3}
+  Itemdel: "\u5730\u4E2D\u3067\u3054\u304F\u307E\u308C\u306B\u3068\u308C\u308B"

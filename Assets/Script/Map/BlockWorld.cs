@@ -114,32 +114,62 @@ public class BlockWorld : MonoBehaviour
         foreach (var chunk in chunks.Values)
         {
             bool changed = false;
+
+            int[,,] copy = (int[,,])chunk.blocks.Clone();
+
             for (int y = 1; y < chunk.height; y++)
             {
+
                  for (int x = 0; x < chunk._chunkSize; x++)
                     {
+
                     for (int z = 0; z < chunk._chunkSize; z++)
                     {
-                        if (chunk.blocks[x, y, z] != 8)
+                        int id = copy[x, y, z];
+
+                        if (!IsWater(id))
                             continue;
+
+                        int level = GetWaterLevel(id);
 
                         if (chunk.blocks[x, y - 1, z] == 0)
                         {
-                            chunk.blocks[x, y - 1, z] = 8;
+                            chunk.blocks[x, y - 1, z] = 800;
 
                             changed = true;
                         }
-                        else
+
+                        else if (level > 1)
                         {
+                            SpreadWater(
+                                chunk,
+                                x + 1,
+                                y,
+                                z,
+                                level);
 
-                            TrySpread(chunk, x + 1, y, z);
-                            TrySpread(chunk, x - 1, y, z);
+                            SpreadWater(
+                                chunk,
+                                x - 1,
+                                y,
+                                z,
+                                level);
 
-                            TrySpread(chunk, x, y, z + 1);
-                            TrySpread(chunk, x, y, z - 1);
+                            SpreadWater(
+                                chunk,
+                                x,
+                                y,
+                                z + 1,
+                                level);
+
+                            SpreadWater(
+                                chunk,
+                                x,
+                                y,
+                                z - 1,
+                                level);
 
                             changed = true;
-
                         }
                     }
                 }
@@ -348,6 +378,19 @@ public class BlockWorld : MonoBehaviour
         chunk.blocks[x, y, z] = 8;
     }
 
+    void SpreadWater(ChunkMeshWorld chunk, int x, int y, int z, int level)
+    {
+        if (x < 0 || x >= chunk._chunkSize) return;
+        else if (z < 0 || z >= chunk._chunkSize) return;
+        else if (y < 0 || y >= chunk.height) return;
+        else if (chunk.blocks[x, y, z] != 0) return;
+
+        int nextLevel = level - 1;
+
+        if (nextLevel <= 0) return;
+        chunk.blocks[x, y, z] = 807 - nextLevel;
+    }
+
     public void ModifyBlock(Vector3Int worldPos,int blockID)
     {
 
@@ -398,9 +441,15 @@ public class BlockWorld : MonoBehaviour
 
     }
 
-    /*    public void ReturnBlock(GameObject block)
-        {
-            block.SetActive(false);
-            blockPool.Enqueue(block);
-        }*/
+    bool IsWater(int id)
+    {
+        return id == 8 || id == 800 || id == 801 || id == 802 || id == 803 || id == 804 || id == 805 || id == 806;
+    }
+
+    int GetWaterLevel(int id)
+    {
+        if (id == 8) return 8;
+
+        return 807 - id;
+    }
 }
