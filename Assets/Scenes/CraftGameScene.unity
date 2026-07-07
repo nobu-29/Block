@@ -731,7 +731,7 @@ GameObject:
   m_Component:
   - component: {fileID: 519323030}
   - component: {fileID: 519323031}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Chunk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -864,6 +864,7 @@ GameObject:
   - component: {fileID: 559832338}
   - component: {fileID: 559832337}
   - component: {fileID: 559832336}
+  - component: {fileID: 559832339}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -932,6 +933,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &559832339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559832335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1c68e7a131f21f4cb080bacc8956945, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &630479676
 GameObject:
   m_ObjectHideFlags: 0
@@ -2365,11 +2378,11 @@ Transform:
   m_GameObject: {fileID: 1210267261}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.3499999, z: 0}
+  m_LocalPosition: {x: 0, y: 0.35000038, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1908985006}
+  m_Father: {fileID: 1923960922}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1210267266
 MonoBehaviour:
@@ -2944,7 +2957,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1908985006
 Transform:
   m_ObjectHideFlags: 0
@@ -2957,8 +2970,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1210267265}
+  m_Children: []
   m_Father: {fileID: 1923960922}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1923960914
@@ -3177,6 +3189,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: b746a932-5256-46a2-8358-e85dd031979f
     m_ActionName: 'Player/HotbarMoveRight[/DualSenseGamepadHID1/rightShoulder,/Keyboard/1]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 559832339}
+        m_TargetAssemblyTypeName: SceneLoadManeger, Assembly-CSharp
+        m_MethodName: SceneGo
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: StartScene
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 4e9b2512-c619-4f45-9efa-187c2f36d49b
+    m_ActionName: 'Player/ExitGame[/XInputControllerWindows/start,/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -3248,6 +3276,7 @@ Transform:
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1210267265}
   - {fileID: 1908985006}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
