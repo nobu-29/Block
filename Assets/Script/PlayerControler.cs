@@ -25,6 +25,18 @@ public class PlayerControler : MonoBehaviour
     private Vector2 moveInput;
     private Outline currentOutline;
 
+    private Vector3 _resetPos;
+
+    public void Start()
+    {
+        _resetPos = transform.position;
+    }
+
+    private void Update()
+    {
+        if (transform.position.y <= blockchunk.worldMinY) transform.position = _resetPos;
+    }
+
     void FixedUpdate()
     {
         _isJump = CheckGrounded();
@@ -65,7 +77,7 @@ public class PlayerControler : MonoBehaviour
     {
         if (!context.performed) return;
 
-        if (!_isJump)
+        if (_isJump)
         {
             _rb.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
             _isJump = false;
@@ -99,7 +111,7 @@ public class PlayerControler : MonoBehaviour
 
 
             // ƒAƒCƒeƒ€Žæ“¾
-            ItemObject item = _hotbar.GetItemByID(blockID); 
+            ItemObject item =BlockDatabase.Instance.GetItem(blockID); 
             if (item != null)
                 _playerInventory.itemGet(item);
 
@@ -126,6 +138,10 @@ public class PlayerControler : MonoBehaviour
 
             if (item != null && _playerInventory.ItemHas(item))
             {
+                Bounds playerBounds = GetComponent<Collider>().bounds;
+
+                if (playerBounds.Contains(blockPos + Vector3.one * 0.5f)) return;
+
                 blockchunk.ModifyBlock(blockPos, item.blockID);
 
                 _playerInventory.ItemRemove(item);
@@ -155,8 +171,14 @@ public class PlayerControler : MonoBehaviour
 
     bool CheckGrounded()
     {
-        float checkDistance = 0.2f;
-        return Physics.Raycast(transform.position, Vector3.down, checkDistance, LayerMask.GetMask("Block"));
+        float checkDistance = 1.2f;
+
+        bool grounded = Physics.Raycast(transform.position, Vector3.down, checkDistance, LayerMask.GetMask("Block"));
+
+        Debug.Log(grounded);
+        Debug.DrawRay(transform.position, Vector3.down * checkDistance, grounded ? Color.green : Color.red);
+
+        return  grounded;
     }
 
     /*    bool TryGetTargetBlock(out Vector3Int blockPos)
