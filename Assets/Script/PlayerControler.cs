@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerControler : MonoBehaviour
 {
@@ -16,29 +16,39 @@ public class PlayerControler : MonoBehaviour
     public float reachDistance = 5f; // ブロックの届く距離
     public BlockWorld blockchunk;   //破壊・設置対象のチャンク
 
+    public Material _outlineMaterial;
+    public Mesh cubeMesh;
+
     [SerializeField] private bool _isDash = false;
     private bool _isJump = true;
+    //private bool _isGround = false;
     private Vector2 moveInput;
+    private Outline currentOutline;
 
-    void Update()
+    void FixedUpdate()
     {
+        _isJump = CheckGrounded();
+
         // カメラの向きを基準に移動方向を作る
-        Vector3 forward = _camera.transform.forward;
-        Vector3 right = _camera.transform.right;
+        Vector3 forward = transform.forward;
+        Vector3 right = transform.right;
 
         // 上下方向の成分を消す（地面を滑るように移動するため）
         forward.y = 0;
         right.y = 0;
 
-        forward.Normalize();
-        right.Normalize();
+        /*    forward.Normalize();
+            right.Normalize();*/
 
         // 入力に応じて移動方向を決定
         Vector3 move = forward * moveInput.y + right * moveInput.x;
 
         float speed = _isDash ? MoveSpeed * MoveBoost : MoveSpeed;
-        _rb.MovePosition(transform.position + move * speed * Time.deltaTime);
+        _rb.MovePosition(transform.position + move * speed * Time.fixedDeltaTime);
         //transform.Translate(move * speed * Time.deltaTime, Space.World);
+
+        DrawBlockOutline();
+        //HandleOutline();
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -53,40 +63,47 @@ public class PlayerControler : MonoBehaviour
 
     public void Jump(InputAction.CallbackContext context)
     {
-        if (context.performed && _isJump)
+        if (!context.performed) return;
+
+        if (!_isJump)
         {
             _rb.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
             _isJump = false;
         }
-        
-    }
-    private void OnCollisionEnter(Collision collision)
-    {
-/*        if(collision.gameObject.layer == "Block")
-        {
 
-        }*/
-         _isJump = true;
     }
+    /*    private void OnCollisionEnter(Collision collision)
+        {
+           if(collision.gameObject.layer == "Block")
+            {
+
+            }
+             _isJump = true;
+        }*/
 
     // --- ブロック破壊 ---
     public void BreakBlock(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
 
-        Ray ray = new Ray(_camera.transform.position,_camera.transform.forward);
-        if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
         {
-            var block = hit.collider.GetComponent<BlockMG>();
-            if(block != null)
-            {
-                _playerInventory.itemGet(block.itemData);
+            Vector3 hitPos = hit.point - hit.normal * 0.01f;
+            Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
 
-                Vector3 hitPos = hit.point - hit.normal * 0.01f;
-                Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
-                blockchunk.ModifyBlock(blockPos, 0);
-                blockchunk.ReturnBlock(hit.collider.gameObject);
-            }
+            int blockID = blockchunk.GetBlock(blockPos);
+
+            if (blockID == 0) return;
+
+
+            // アイテム取得
+            ItemObject item = _hotbar.GetItemByID(blockID); // ←後で説明
+            if (item != null)
+                _playerInventory.itemGet(item);
+
+
+            blockchunk.ModifyBlock(blockPos, 0);
         }
         _hotbar.UpdateUI();
         _inventoryUI.UpdateUI();
@@ -103,13 +120,10 @@ public class PlayerControler : MonoBehaviour
         {
             Vector3 hitPos = hit.point + hit.normal * 0.01f;
             Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
-            
-            if(Physics.CheckBox(blockPos,Vector3.one * 0.45f, Quaternion.identity, LayerMask.GetMask("Block")))
-                return;
 
             ItemObject item = _hotbar.GetSelectedItem();
 
-            if(item != null && _playerInventory.ItemHas(item))
+            if (item != null && _playerInventory.ItemHas(item))
             {
                 blockchunk.ModifyBlock(blockPos, item.blockID);
 
@@ -125,8 +139,8 @@ public class PlayerControler : MonoBehaviour
         if (!context.performed) return;
 
         int newIndex = _hotbar.selectedIndex - 1;
-        if(newIndex < 0) newIndex = _hotbar.slots.Length - 1;
-        
+        if (newIndex < 0) newIndex = _hotbar.slots.Length - 1;
+
         _hotbar.Select(newIndex);
     }
     public void UIMoveRight(InputAction.CallbackContext context)
@@ -136,5 +150,78 @@ public class PlayerControler : MonoBehaviour
         int newIndex = (_hotbar.selectedIndex + 1) % _hotbar.slots.Length;
 
         _hotbar.Select(newIndex);
+    }
+
+    bool CheckGrounded()
+    {
+        float checkDistance = 0.2f;
+        return Physics.Raycast(transform.position, Vector3.down, checkDistance, LayerMask.GetMask("Block"));
+    }
+
+    /*    bool TryGetTargetBlock(out Vector3Int blockPos)
+        {
+            blockPos = default;
+
+            Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+
+            if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+            {
+                Vector3 hitPos = hit.point - hit.normal * 0.01f;
+                blockPos = Vector3Int.FloorToInt(hitPos);
+                return true;
+            }
+            return false;
+        }*/
+
+    void HandleOutline()
+    {
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        {
+            Outline outline = hit.collider.GetComponent<Outline>();
+            if (outline != null)
+            {
+                if (currentOutline != null && currentOutline != outline)
+                    currentOutline.enabled = false;
+
+                outline.enabled = true;
+                currentOutline = outline;
+
+                return;
+            }
+        }
+
+        if (currentOutline != null)
+        {
+            currentOutline.enabled = false;
+            currentOutline = null;
+        }
+    }
+
+    void DrawBlockOutline()
+    {
+        Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, reachDistance))
+        {
+            Vector3 hitPos = hit.point - hit.normal * 0.01f;
+            Vector3Int blockPos = Vector3Int.FloorToInt(hitPos);
+
+            Vector3 center = blockPos + Vector3.one * 0.5f;
+            Matrix4x4 matrix = Matrix4x4.TRS(center, Quaternion.identity, Vector3.one * 1.01f);
+
+            _outlineMaterial.SetPass(0);
+            Graphics.DrawMeshNow(cubeMesh, matrix);
+        }
+    }
+    public void CraftAdd(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        ItemObject selected = _hotbar.GetSelectedItem();
+        if (selected == null) return;
+
+        //_craftingUI.AddItem(selected);
     }
 }
