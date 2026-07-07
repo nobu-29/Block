@@ -113,10 +113,11 @@ public class BlockWorld : MonoBehaviour
     {
         foreach (var chunk in chunks.Values)
         {
-            for (int x = 0; x < chunk._chunkSize; x++)
+            bool changed = false;
+            for (int y = 1; y < chunk.height; y++)
             {
-                for (int y = 1; y < chunk.height; y++)
-                {
+                 for (int x = 0; x < chunk._chunkSize; x++)
+                    {
                     for (int z = 0; z < chunk._chunkSize; z++)
                     {
                         if (chunk.blocks[x, y, z] != 8)
@@ -126,11 +127,25 @@ public class BlockWorld : MonoBehaviour
                         {
                             chunk.blocks[x, y - 1, z] = 8;
 
-                            chunk.SetDirty();
+                            changed = true;
+                        }
+                        else
+                        {
+
+                            TrySpread(chunk, x + 1, y, z);
+                            TrySpread(chunk, x - 1, y, z);
+
+                            TrySpread(chunk, x, y, z + 1);
+                            TrySpread(chunk, x, y, z - 1);
+
+                            changed = true;
+
                         }
                     }
                 }
             }
+
+            if (changed) chunk.SetDirty();
         }
     }
 
@@ -251,7 +266,7 @@ public class BlockWorld : MonoBehaviour
         }
 
         chunkMesh.SetDirty();
-        //chunkMesh.BuildMesh();
+        chunkMesh.BuildMesh();
 
         chunks.Add(chunkPos, chunkMesh);
 
@@ -314,6 +329,23 @@ public class BlockWorld : MonoBehaviour
             }
         }
 
+    }
+
+    void TrySpread(ChunkMeshWorld chunk,int x,int y,int z)
+    {
+        if (x < 0 || x >= chunk._chunkSize)
+            return;
+
+        if (z < 0 || z >= chunk._chunkSize)
+            return;
+
+        if (y < 0 || y >= chunk.height)
+            return;
+
+        if (chunk.blocks[x, y, z] != 0)
+            return;
+
+        chunk.blocks[x, y, z] = 8;
     }
 
     public void ModifyBlock(Vector3Int worldPos,int blockID)

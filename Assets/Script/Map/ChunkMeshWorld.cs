@@ -152,6 +152,7 @@ public class ChunkMeshWorld : MonoBehaviour
         mesh.RecalculateBounds();
 
         _meshCollider.sharedMesh = null;
+        mesh.RecalculateBounds();
         _meshCollider.sharedMesh = mesh;
 
 
@@ -193,7 +194,7 @@ public class ChunkMeshWorld : MonoBehaviour
            ny >= 0 && ny < height &&
            nz >= 0 && nz < _chunkSize)
         {
-            if (blocks[nx, ny, nz] == 8)
+            if (blocks[nx, ny, nz] != 0)
                 return;
         }
 
@@ -275,14 +276,48 @@ public class ChunkMeshWorld : MonoBehaviour
 
         float waterHeight = 0.9f;
 
-        // ‚Æ‚è‚ ‚¦‚¸ã–Ê‚¾‚¯•`‰æ‚·‚é
-        if (dir != Vector3.up)
-            return;
-
-        wQuad[0] = pos + new Vector3(0, waterHeight, 1);
-        wQuad[1] = pos + new Vector3(1, waterHeight, 1);
-        wQuad[2] = pos + new Vector3(1, waterHeight, 0);
-        wQuad[3] = pos + new Vector3(0, waterHeight, 0);
+        if (dir == Vector3.forward)
+        {
+            wQuad[0] = pos + new Vector3(0, 0, 1);
+            wQuad[1] = pos + new Vector3(1, 0, 1);
+            wQuad[2] = pos + new Vector3(1, waterHeight, 1);
+            wQuad[3] = pos + new Vector3(0, waterHeight, 1);
+        }
+        else if (dir == Vector3.back)
+        {
+            wQuad[0] = pos + new Vector3(1, 0, 0);
+            wQuad[1] = pos + new Vector3(0, 0, 0);
+            wQuad[2] = pos + new Vector3(0, waterHeight, 0);
+            wQuad[3] = pos + new Vector3(1, waterHeight, 0);
+        }
+        else if (dir == Vector3.left)
+        {
+            wQuad[0] = pos + new Vector3(0, 0, 0);
+            wQuad[1] = pos + new Vector3(0, 0, 1);
+            wQuad[2] = pos + new Vector3(0, waterHeight, 1);
+            wQuad[3] = pos + new Vector3(0, waterHeight, 0);
+        }
+        else if (dir == Vector3.right)
+        {
+            wQuad[0] = pos + new Vector3(1, 0, 1);
+            wQuad[1] = pos + new Vector3(1, 0, 0);
+            wQuad[2] = pos + new Vector3(1, waterHeight, 0);
+            wQuad[3] = pos + new Vector3(1, waterHeight, 1);
+        }
+        else if (dir == Vector3.up)
+        {
+            wQuad[0] = pos + new Vector3(0, waterHeight, 1);
+            wQuad[1] = pos + new Vector3(1, waterHeight, 1);
+            wQuad[2] = pos + new Vector3(1, waterHeight, 0);
+            wQuad[3] = pos + new Vector3(0, waterHeight, 0);
+        }
+        else if (dir == Vector3.down)
+        {
+            wQuad[0] = pos + new Vector3(0, 0, 0);
+            wQuad[1] = pos + new Vector3(1, 0, 0);
+            wQuad[2] = pos + new Vector3(1, 0, 1);
+            wQuad[3] = pos + new Vector3(0, 0, 1);
+        }
 
         waterVertices.AddRange(wQuad);
 
