@@ -11,12 +11,22 @@ public class ChunkMeshWorld : MonoBehaviour
 
     public int[,,] blocks;
 
+    //ブロックに使うマテリアル設定
     Mesh mesh;
     List<Vector3> vertices = new List<Vector3>();
     List<int> triangles = new List<int>();
-
     List<Vector2> uv = new List<Vector2>();
     public Material _material;
+
+    //↓水用のマテリアル設定
+    Mesh waterMesh;
+    List<Vector3> waterVertices　= new List<Vector3>();
+    List<int> waterTriangles = new List<int>();
+    List<Vector2> waterUV = new List<Vector2>();
+    public Material _waterMaterial;
+
+    public MeshFilter _waterMeshFilter;
+    public MeshRenderer _waterMeshRenderer;
 
     private bool isDirty;
 
@@ -30,20 +40,29 @@ public class ChunkMeshWorld : MonoBehaviour
     {
         blocks = new int[_chunkSize, height, _chunkSize];
         mesh = new Mesh();
+        waterMesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
 
         if(_material == null)
         {
-            Debug.LogError("Materialが設定されていないよ！!");
+            Debug.LogError("ブロックのMaterialが設定されていないよ！!");
+            return;
+        }
+        else if (_waterMaterial == null)
+        {
+            Debug.LogError("水用の半透明Materialが設定されていないよ！!");
             return;
         }
 
-        _meshFilter = GetComponent<MeshFilter>();
+            _meshFilter = GetComponent<MeshFilter>();
         _meshRenderer = GetComponent<MeshRenderer>();
         _meshCollider = GetComponent<MeshCollider>();
 
         _meshFilter.mesh = mesh;
         _meshRenderer.material = _material;
+
+        _waterMeshFilter.mesh = waterMesh;
+        _waterMeshRenderer.material = _waterMaterial;
     }
 
     private void Update()
@@ -74,6 +93,7 @@ public class ChunkMeshWorld : MonoBehaviour
         uv.Clear();
 
         mesh.Clear();
+        waterMesh.Clear();
 
         _meshCollider.sharedMesh = null;
 
@@ -85,20 +105,40 @@ public class ChunkMeshWorld : MonoBehaviour
         uv.Clear();
         triangles.Clear();
 
+        waterVertices.Clear();
+        waterTriangles.Clear();
+        waterUV.Clear();
+
         for (int x = 0; x < _chunkSize; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 for (int z = 0; z < _chunkSize; z++)
                 {
-                    if (blocks[x, y, z] == 0) continue;
+                    int id = blocks[x, y, z];
 
-                    CheckFace(x, y, z, Vector3.forward);
-                    CheckFace(x, y, z, Vector3.back);
-                    CheckFace(x, y, z, Vector3.left);
-                    CheckFace(x, y, z, Vector3.right);
-                    CheckFace(x, y, z, Vector3.up);
-                    CheckFace(x, y, z, Vector3.down);
+                    if (id == 0) continue;
+
+                    else if(id == 8)
+                    {
+
+                        CheckWaterFace(x, y, z, Vector3.forward);
+                        CheckWaterFace(x, y, z, Vector3.back);
+                        CheckWaterFace(x, y, z, Vector3.left);
+                        CheckWaterFace(x, y, z, Vector3.right);
+                        CheckWaterFace(x, y, z, Vector3.up);
+                        CheckWaterFace(x, y, z, Vector3.down);
+
+                    }
+                    else
+                    {
+                        CheckFace(x, y, z, Vector3.forward);
+                        CheckFace(x, y, z, Vector3.back);
+                        CheckFace(x, y, z, Vector3.left);
+                        CheckFace(x, y, z, Vector3.right);
+                        CheckFace(x, y, z, Vector3.up);
+                        CheckFace(x, y, z, Vector3.down);
+                    }
                 }
             }
         }
@@ -113,6 +153,17 @@ public class ChunkMeshWorld : MonoBehaviour
 
         _meshCollider.sharedMesh = null;
         _meshCollider.sharedMesh = mesh;
+
+
+        waterMesh.Clear();
+
+        waterMesh.vertices = waterVertices.ToArray();
+        waterMesh.triangles = waterTriangles.ToArray();
+        waterMesh.uv = waterUV.ToArray();
+
+        waterMesh.RecalculateNormals();
+        waterMesh.RecalculateBounds();
+
     }
 
 
@@ -131,6 +182,24 @@ public class ChunkMeshWorld : MonoBehaviour
 
         AddFace(new Vector3(x, y + worldMinY, z), dir, blocks[x, y, z]);
     }
+
+    void CheckWaterFace(int x, int y, int z, Vector3 dir)
+    {
+        int nx = x + (int)dir.x;
+        int ny = y + (int)dir.y;
+        int nz = z + (int)dir.z;
+
+        if (nx >= 0 && nx < _chunkSize &&
+           ny >= 0 && ny < height &&
+           nz >= 0 && nz < _chunkSize)
+        {
+            if (blocks[nx, ny, nz] == 8)
+                return;
+        }
+
+        AddWaterFace(new Vector3(x, y + worldMinY, z),dir);
+    }
+
 
     void AddFace(Vector3 pos, Vector3 dir,int blockID)
     {
@@ -196,6 +265,42 @@ public class ChunkMeshWorld : MonoBehaviour
         uv.Add(uvOffset + new Vector2(size, 0));
         uv.Add(uvOffset + new Vector2(size, size));
         uv.Add(uvOffset + new Vector2(0, size));
+    }
+
+    void AddWaterFace(Vector3 pos, Vector3 dir)
+    {
+        int v = waterVertices.Count;
+
+        Vector3[] wQuad = new Vector3[4];
+
+        float waterHeight = 0.9f;
+
+        // とりあえず上面だけ描画する
+        if (dir != Vector3.up)
+            return;
+
+        wQuad[0] = pos + new Vector3(0, waterHeight, 1);
+        wQuad[1] = pos + new Vector3(1, waterHeight, 1);
+        wQuad[2] = pos + new Vector3(1, waterHeight, 0);
+        wQuad[3] = pos + new Vector3(0, waterHeight, 0);
+
+        waterVertices.AddRange(wQuad);
+
+        waterTriangles.Add(v + 0);
+        waterTriangles.Add(v + 1);
+        waterTriangles.Add(v + 2);
+
+        waterTriangles.Add(v + 0);
+        waterTriangles.Add(v + 2);
+        waterTriangles.Add(v + 3);
+
+        Vector2 uvOffset = GetUV(1, 3);
+        float size = 0.25f;
+
+        waterUV.Add(uvOffset + new Vector2(0, 0));
+        waterUV.Add(uvOffset + new Vector2(size, 0));
+        waterUV.Add(uvOffset + new Vector2(size, size));
+        waterUV.Add(uvOffset + new Vector2(0, size));
     }
 
     Vector2 GetUV(int x, int y)

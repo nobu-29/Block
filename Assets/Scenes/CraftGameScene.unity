@@ -770,9 +770,10 @@ MonoBehaviour:
   chunkSize: 16
   viewDistance: 4
   worldSize: 10
-  maxheight: 48
+  maxheight: 64
   worldMinY: -32
   worldMaxY: 128
+  seaLevel: 10
   noiseScale: 0.1
   noiseScale_mini: 0.15
   heightMultiplier: 10

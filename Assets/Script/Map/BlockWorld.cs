@@ -32,6 +32,8 @@ public class BlockWorld : MonoBehaviour
     private Vector2Int currentPlayerChunk;
     private Queue<GameObject> chunkPool = new Queue<GameObject>();
 
+    private float waterTimer;
+
     private void Start()
     {
         UpdateChunks();
@@ -46,6 +48,13 @@ public class BlockWorld : MonoBehaviour
         {
             currentPlayerChunk = newChunk;
             UpdateChunks();
+        }
+
+        waterTimer += Time.deltaTime;
+        if(waterTimer > 0.25f)
+        {
+            waterTimer = 0;
+            UpdateWater();
         }
     }
 
@@ -98,6 +107,31 @@ public class BlockWorld : MonoBehaviour
             chunks.Remove(pos);
         }
 
+    }
+
+    void UpdateWater()
+    {
+        foreach (var chunk in chunks.Values)
+        {
+            for (int x = 0; x < chunk._chunkSize; x++)
+            {
+                for (int y = 1; y < chunk.height; y++)
+                {
+                    for (int z = 0; z < chunk._chunkSize; z++)
+                    {
+                        if (chunk.blocks[x, y, z] != 8)
+                            continue;
+
+                        if (chunk.blocks[x, y - 1, z] == 0)
+                        {
+                            chunk.blocks[x, y - 1, z] = 8;
+
+                            chunk.SetDirty();
+                        }
+                    }
+                }
+            }
+        }
     }
 
     Vector2Int GetPlayerChunk()
