@@ -95,10 +95,11 @@ public class PlayerControler : MonoBehaviour
             int blockID = blockchunk.GetBlock(blockPos);
 
             if (blockID == 0) return;
+            else if (blockID == 99) return;
 
 
             // ÉAÉCÉeÉÄéÊìæ
-            ItemObject item = _hotbar.GetItemByID(blockID); // Å©å„Ç≈ê‡ñæ
+            ItemObject item = _hotbar.GetItemByID(blockID); 
             if (item != null)
                 _playerInventory.itemGet(item);
 

@@ -9,24 +9,27 @@ public class ChunkData
 
 public class BlockWorld : MonoBehaviour
 {
-    /*    public GameObject DirtPF;
-        public GameObject GrassPF;
-        public GameObject StonePF;*/
     public GameObject chunkPrefab;
 
     public Transform _player;
     public int chunkSize = 16;
     public int viewDistance = 2;
+
     [Header("チャンク数")]
     public int worldSize = 4;   //チャンク数
     public int maxheight = 16;
-    public float noiseScale = 0.1f;
-    public float heightMultiplier = 5f;
-    public Dictionary<Vector2Int, GameObject> chunks = new Dictionary<Vector2Int, GameObject>();
+    [Header("ワールドの高さ設定")]
+    public int worldMinY = -32;
+    public int worldMaxY = 64;
 
-    private Dictionary<Vector2Int, ChunkData> _chunkDatas = new Dictionary<Vector2Int, ChunkData>();
+    public float noiseScale = 0.1f;
+    public float noiseScale_mini = 0.15f;
+    public float heightMultiplier = 5f;
+    public float heightMultiplier_mini = 4f;
+    public Dictionary<Vector2Int, ChunkMeshWorld> chunks = new Dictionary<Vector2Int, ChunkMeshWorld>();
+
     private Vector2Int currentPlayerChunk;
-    private Queue<GameObject> blockPool = new Queue<GameObject>();
+    private Queue<GameObject> chunkPool = new Queue<GameObject>();
 
     private void Start()
     {
@@ -57,6 +60,8 @@ public class BlockWorld : MonoBehaviour
         {
             for (int z = -viewDistance; z <= viewDistance; z++)
             {
+                if ((x * x) + (z * z) >( viewDistance * viewDistance)) continue;
+
                 Vector2Int chunkPos = new Vector2Int(playerChunk.x + x, playerChunk.y + z);
                 neededChunks.Add(chunkPos);
 
@@ -75,7 +80,14 @@ public class BlockWorld : MonoBehaviour
 {
             if (!neededChunks.Contains(chunk.Key))
             {
-                chunk.Value.SetActive(false);
+                var chunkMesh = chunk.Value.GetComponent<ChunkMeshWorld>();
+
+                chunkMesh.ClearChunk();
+
+                chunk.Value.gameObject.SetActive(false);
+
+                chunkPool.Enqueue(chunk.Value.gameObject);
+
                 toRemove.Add(chunk.Key);
             }
         }
@@ -100,16 +112,29 @@ public class BlockWorld : MonoBehaviour
 
         if (chunks.ContainsKey(chunkPos))
         {
-            chunks[chunkPos].SetActive(true);
+            chunks[chunkPos].gameObject.SetActive(true);
             return;
         }
 
+        GameObject chunkObj;
 
-        GameObject chunkObj = Instantiate(chunkPrefab);
+        if (chunkPool.Count > 0)
+        {
+            chunkObj = chunkPool.Dequeue();
+
+            chunkObj.SetActive(true);
+        }
+        else
+        {
+            chunkObj = Instantiate(chunkPrefab);
+        }
 
         chunkObj.name = $"Chunk_{chunkPos.x}_{chunkPos.y}";
 
         var chunkMesh = chunkObj.GetComponent<ChunkMeshWorld>();
+
+        chunkMesh.blocks = new int[chunkMesh._chunkSize,chunkMesh.height,chunkMesh._chunkSize];
+
 
         for (int x = 0; x < chunkSize; x++)
         {
@@ -118,53 +143,65 @@ public class BlockWorld : MonoBehaviour
                 int worldX = x + chunkPos.x * chunkSize;
                 int worldZ = z + chunkPos.y * chunkSize;
 
-                float height = Mathf.PerlinNoise(worldX * noiseScale, worldZ * noiseScale) * heightMultiplier;
+                float height = Mathf.PerlinNoise(worldX * noiseScale, worldZ * noiseScale) * heightMultiplier + Mathf.PerlinNoise(worldX * noiseScale_mini, worldZ * noiseScale_mini) * heightMultiplier_mini;
+
+                //バイオーム生成用コード
+                float biomeNoise = Mathf.PerlinNoise(worldX * 0.01f, worldZ * 0.01f);
+
+                //砂漠にするかどうかの判定
+                bool isDesert = biomeNoise > 0.6f;
+
                 int h = Mathf.FloorToInt(height);
 
-                for (int y = 0; y <= h; y++)
+                for (int y = worldMinY; y <= h; y++)
                 {
+                    float caveNoise = Mathf.PerlinNoise((worldX + 1000) * 0.08f, (worldZ + y) * 0.08f);
 
-                    if (y == h)
-                        chunkMesh.blocks[x, y, z] = 1; // 草
-                    else if (y > h - 3)
-                        chunkMesh.blocks[x, y, z] = 2; // 土
-                    else
-                        chunkMesh.blocks[x, y, z] = 3; // 石
+                    int localY = chunkMesh.WorldYToLocalY(y);
 
-                   /* Vector3Int blockpos = new Vector3Int(worldX, y, worldZ);
-
-                    int ID;
-
-                    if (_chunkDatas.ContainsKey(chunkPos) && 
-                        _chunkDatas[chunkPos].modifiedBlocks.ContainsKey(blockpos))
+                    if (y == worldMinY)
+                        chunkMesh.blocks[x, localY, z] = 99; // 岩盤
+                    else if(y == h)
                     {
-                        ID = _chunkDatas[chunkPos].modifiedBlocks[blockpos];
-                    }
-                    else
-                    {
-                        if (y == h)
-                            ID = 1;
-                        else if (y > h - 3)
-                            ID = 2;
+                        if(isDesert)
+                            chunkMesh.blocks[x, localY, z] = 14; // 砂
                         else
-                            ID = 3;
+                            chunkMesh.blocks[x, localY, z] = 1; // 草
 
+                        if(!isDesert) TrySpawnTree(chunkMesh, x, y, z);
                     }
+                    else if (y > h - 3)
+                    {
 
-                    //壊されている
-                    if (ID == 0) continue;
+                        if(isDesert)
+                            chunkMesh.blocks[x, localY, z] = 14; // 砂
+                        else
+                            chunkMesh.blocks[x, localY, z] = 2; // 土
+                    }
+                    else if(y < h - 5)
+                    {
 
-                    GameObject prefab = GetPrefabID(ID);
-                    GameObject block = GetBlock(prefab,blockpos);
-                    block.transform.parent = chunkObj.transform;
-                    block.isStatic = true;*/
+                        float oreNoise = Mathf.PerlinNoise(worldX * 0.2f, (worldZ + y) * 0.2f);
+
+                        if (oreNoise > 0.75f)
+                            chunkMesh.blocks[x, localY, z] = 26; // 鉄
+                        else
+                            chunkMesh.blocks[x, localY, z] = 3; // 石
+                    }
+                    else
+                    {
+                        if (caveNoise > 0.62f && y < h - 3) continue;
+
+                            chunkMesh.blocks[x, localY, z] = 3; // 石
+                    }
                 }
             }
         }
 
-        chunkMesh.BuildMesh();
+        chunkMesh.SetDirty();
+        //chunkMesh.BuildMesh();
 
-        chunks.Add(chunkPos, chunkObj);
+        chunks.Add(chunkPos, chunkMesh);
 
 
         chunkObj.transform.position = new Vector3(
@@ -172,6 +209,51 @@ public class BlockWorld : MonoBehaviour
             0,
             chunkPos.y * chunkSize
         );
+
+    }
+
+    void TrySpawnTree(ChunkMeshWorld chunk, int x, int groundY, int z)
+    {
+        if (groundY < 2) return;
+
+        if (Random.Range(0f, 100f) > 2f)
+            return;
+
+        int trunkHeight = Random.Range(4, 7);
+
+        for (int i = 1; i <= trunkHeight; i++)
+        {
+            int ly = chunk.WorldYToLocalY(groundY + i);
+
+            if (ly >= chunk.height) return;
+
+            chunk.blocks[x, ly, z] = 4;
+        }
+
+        int leafCenter =
+            chunk.WorldYToLocalY(
+                groundY + trunkHeight
+            );
+
+        for (int lx = -2; lx <= 2; lx++)
+        {
+            for (int lz = -2; lz <= 2; lz++)
+            {
+                for (int ly = -2; ly <= 1; ly++)
+                {
+                    int nx = x + lx;
+                    int ny = leafCenter + ly;
+                    int nz = z + lz;
+
+                    if (nx < 0 || nx >= chunkSize) continue;
+                    if (nz < 0 || nz >= chunkSize) continue;
+                    if (ny < 0 || ny >= chunk.height) continue;
+
+                    if (chunk.blocks[nx, ny, nz] == 0)
+                        chunk.blocks[nx, ny, nz] = 5;
+                }
+            }
+        }
 
     }
 
@@ -185,32 +267,23 @@ public class BlockWorld : MonoBehaviour
 
         if(!chunks.ContainsKey(chunkPos)) return;
 
-        var chunkMesh = chunks[chunkPos].GetComponent<ChunkMeshWorld>();
+        var chunkMesh = chunks[chunkPos];
 
         int x = ((worldPos.x % chunkSize) + chunkSize) % chunkSize;
+
         int y = worldPos.y;
+        int localY = chunkMesh.WorldYToLocalY(y);
+
+        if (y < worldMinY || y >= worldMaxY) return;
+
         int z = ((worldPos.z % chunkSize) + chunkSize) % chunkSize;
 
-        chunkMesh.blocks[x, y, z] = blockID;
+        chunkMesh.blocks[x, localY, z] = blockID;
 
-        chunkMesh.BuildMesh();
+        chunkMesh.SetDirty();
 
 
     }
-
-    /*    GameObject GetPrefabID(int ID)
-        {
-            switch (ID)
-            {
-                case 1: return GrassPF;
-                case 2: return DirtPF;
-                case 3: return StonePF;
-                default:
-                    Debug.LogError("Unknown Block ID:" + ID);
-                    return null;
-
-            }
-        }*/
 
     public int GetBlock(Vector3Int worldPos)
     {
@@ -218,14 +291,19 @@ public class BlockWorld : MonoBehaviour
 
         if (!chunks.ContainsKey(chunkPos)) return 0;
 
-        var chunkMesh = chunks[chunkPos].GetComponent<ChunkMeshWorld>();
-
+        var chunkMesh = chunks[chunkPos];
 
         int x = ((worldPos.x % chunkSize) + chunkSize) % chunkSize;
+
         int y = worldPos.y;
+        int localY = chunkMesh.WorldYToLocalY(y);
+
+
         int z = ((worldPos.z % chunkSize) + chunkSize) % chunkSize;
 
-        return chunkMesh.blocks[x, y, z];
+        if (y < worldMinY || y >= worldMaxY) return 0;
+
+        return chunkMesh.blocks[x, localY, z];
 
     }
 

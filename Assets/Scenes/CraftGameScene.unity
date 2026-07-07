@@ -768,11 +768,15 @@ MonoBehaviour:
   chunkPrefab: {fileID: 5153288468301299361, guid: 74be8a691870c664392494f4e9171d16, type: 3}
   _player: {fileID: 1923960922}
   chunkSize: 16
-  viewDistance: 2
+  viewDistance: 4
   worldSize: 10
   maxheight: 48
+  worldMinY: -32
+  worldMaxY: 128
   noiseScale: 0.1
+  noiseScale_mini: 0.15
   heightMultiplier: 10
+  heightMultiplier_mini: 4
 --- !u!1 &554218434
 GameObject:
   m_ObjectHideFlags: 0
@@ -3264,7 +3268,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 80
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!1 &1945902033
 GameObject:

@@ -6,7 +6,8 @@ using UnityEngine;
 public class ChunkMeshWorld : MonoBehaviour
 {
     public int _chunkSize = 16;
-    public int height = 48;
+    public int height = 96;
+    public int worldMinY = -32;
 
     public int[,,] blocks;
 
@@ -16,6 +17,14 @@ public class ChunkMeshWorld : MonoBehaviour
 
     List<Vector2> uv = new List<Vector2>();
     public Material _material;
+
+    private bool isDirty;
+
+    private MeshCollider _meshCollider;
+    private MeshFilter _meshFilter;
+    private MeshRenderer _meshRenderer;
+
+    private readonly Vector3[] quad = new Vector3[4];
 
     private void Awake()
     {
@@ -28,7 +37,46 @@ public class ChunkMeshWorld : MonoBehaviour
             Debug.LogError("Materialが設定されていないよ！!");
             return;
         }
-        GetComponent<MeshRenderer>().material = _material;
+
+        _meshFilter = GetComponent<MeshFilter>();
+        _meshRenderer = GetComponent<MeshRenderer>();
+        _meshCollider = GetComponent<MeshCollider>();
+
+        _meshFilter.mesh = mesh;
+        _meshRenderer.material = _material;
+    }
+
+    private void Update()
+    {
+        if (!isDirty) return;
+
+        BuildMesh();
+        isDirty = false;
+    }
+
+    public int WorldYToLocalY (int worldY)
+    {
+        return worldY - worldMinY;
+    }
+
+    public void SetDirty()
+    {
+        isDirty = true;
+    }
+
+    public void ClearChunk()
+    {
+
+        System.Array.Clear(blocks, 0, blocks.Length);
+
+        vertices.Clear();
+        triangles.Clear();
+        uv.Clear();
+
+        mesh.Clear();
+
+        _meshCollider.sharedMesh = null;
+
     }
 
     public void BuildMesh()
@@ -61,8 +109,10 @@ public class ChunkMeshWorld : MonoBehaviour
         mesh.triangles = triangles.ToArray();
         mesh.uv = uv.ToArray();
         mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
 
-        GetComponent<MeshCollider>().sharedMesh = mesh;
+        _meshCollider.sharedMesh = null;
+        _meshCollider.sharedMesh = mesh;
     }
 
 
@@ -79,14 +129,12 @@ public class ChunkMeshWorld : MonoBehaviour
             if (blocks[nx, ny, nz] != 0) return;
         }
 
-        AddFace(new Vector3(x, y, z), dir, blocks[x, y, z]);
+        AddFace(new Vector3(x, y + worldMinY, z), dir, blocks[x, y, z]);
     }
 
     void AddFace(Vector3 pos, Vector3 dir,int blockID)
     {
         int v = vertices.Count;
-
-        Vector3[] quad = new Vector3[4];
 
         if (dir == Vector3.forward)
         {
@@ -157,11 +205,12 @@ public class ChunkMeshWorld : MonoBehaviour
         return new Vector2(x * size, (3 - y) * size);
     }
 
+    //↓ブロックに使うメッシュの設定箇所
     Vector2 GetUVByFace(int id, Vector3 dir)
     {
         //float size = 0.25f;
 
-        if(id == 1)
+        if (id == 1)
         {
 
             if (dir == Vector3.up)      // 上
@@ -169,16 +218,46 @@ public class ChunkMeshWorld : MonoBehaviour
             else if (dir == Vector3.down) // 下
                 return GetUV(2, 0);     // 土
             else                        // 横
-                return GetUV(1, 0);     // 草側面
+                return GetUV(1, 2);     // 草側面
         }
 
         // 土
-        if (id == 2)
+        else if (id == 2)
             return GetUV(2, 0);
 
         // 石
-        if (id == 3)
+        else if (id == 3)
+            return GetUV(1, 0);
+
+        // 幹
+        else if (id == 4)
+        {
+            if (dir == Vector3.up || dir == Vector3.down)
+                return GetUV(0, 3);
+            else
+                return GetUV(2, 2);
+        }
+
+        // 葉
+        else if (id == 5)
+            return GetUV(3, 2);
+
+        //砂（ケイ素の元素番号14）
+        else if (id ==14)
             return GetUV(3, 0);
+
+        // 鉄（元素番号26）
+        else if (id == 26)
+            return GetUV(3, 1);
+
+        // 金（元素番号79）
+        else if (id == 79)
+            return GetUV(0, 1);
+
+        // 岩盤
+        else if (id == 99)
+            return GetUV(0, 2);
+
 
         return GetUV(0, 0);
 
