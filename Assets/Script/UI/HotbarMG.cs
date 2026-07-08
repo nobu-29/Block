@@ -45,7 +45,7 @@ public class HotbarMG : MonoBehaviour
     {
         for (int i = 0; i < slots.Length; i++)
         {
-            if(i < _inventory.myinventory.Count)
+            if(i < _inventory.hotbarSize && i < _inventory.myinventory.Count)
             {
                 var data = _inventory.myinventory[i];
 

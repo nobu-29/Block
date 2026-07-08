@@ -7,6 +7,8 @@ public class Inventory : ScriptableObject
     public List<InventorySlot> myinventory = new List<InventorySlot>();
     public int maxStack = 100;
 
+    public int hotbarSize = 7;
+
     public void itemGet(ItemObject item)
     {
         foreach (var slot in myinventory)

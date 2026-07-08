@@ -17,15 +17,20 @@ public class InventoryUIMG : MonoBehaviour
         isOpen = !isOpen;
 
         inventoryPanel.SetActive(isOpen);
+
+        if (isOpen)
+            UpdateUI();
     }
 
     public void UpdateUI()
     {
         for (int i = 0; i < _inventoryslots.Length; i++)
         {
-            if (i < _inventory.myinventory.Count)
+            int inventoryIndex = i + _inventory.hotbarSize;
+
+            if (inventoryIndex < _inventory.myinventory.Count)
             {
-                var data = _inventory.myinventory[i];
+                var data = _inventory.myinventory[inventoryIndex];
 
                 _inventoryslots[i].icon.sprite = data.item.icon;
                 _inventoryslots[i].icon.enabled = true;
