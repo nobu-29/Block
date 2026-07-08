@@ -152,7 +152,7 @@ public class ChunkMeshWorld : MonoBehaviour
         mesh.RecalculateBounds();
 
         _meshCollider.sharedMesh = null;
-        mesh.RecalculateBounds();
+        //mesh.RecalculateBounds();
         _meshCollider.sharedMesh = mesh;
 
 
@@ -197,7 +197,7 @@ public class ChunkMeshWorld : MonoBehaviour
            nz >= 0 && nz < _chunkSize)
         {
             int neighborID = blocks[nx, ny, nz];
-            if (neighborID != 0)
+            if (neighborID != 0 && !IsWater(neighborID))
                 return;
             else if (IsWater(neighborID))
                 return;

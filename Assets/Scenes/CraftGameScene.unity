@@ -768,14 +768,15 @@ MonoBehaviour:
   chunkPrefab: {fileID: 5153288468301299361, guid: 74be8a691870c664392494f4e9171d16, type: 3}
   _player: {fileID: 1923960922}
   chunkSize: 16
-  viewDistance: 4
+  viewDistance: 5
   worldSize: 10
-  maxheight: 64
+  maxheight: 128
   worldMinY: -32
-  worldMaxY: 128
+  worldMaxY: 192
   seaLevel: 10
-  noiseScale: 0.1
-  noiseScale_mini: 0.15
+  treeRate: 1
+  noiseScale: 0.15
+  noiseScale_mini: 0.2
   heightMultiplier: 10
   heightMultiplier_mini: 4
 --- !u!1 &554218434
