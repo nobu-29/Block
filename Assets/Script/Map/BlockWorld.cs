@@ -29,6 +29,8 @@ public class BlockWorld : MonoBehaviour
     public float heightMultiplier_mini = 4f;
     public Dictionary<Vector2Int, ChunkMeshWorld> chunks = new Dictionary<Vector2Int, ChunkMeshWorld>();
 
+    private List<Vector3Int> activeWater = new List<Vector3Int>();
+
     private Vector2Int currentPlayerChunk;
     private Queue<GameObject> chunkPool = new Queue<GameObject>();
 
@@ -111,72 +113,21 @@ public class BlockWorld : MonoBehaviour
 
     void UpdateWater()
     {
-        foreach (var chunk in chunks.Values)
+        List<Vector3Int> newWater = new List<Vector3Int>();
+
+        foreach (var chunk in activeWater)
         {
-            bool changed = false;
+            Vector3Int below = chunk + Vector3Int.down;
 
-            int[,,] copy = (int[,,])chunk.blocks.Clone();
-
-            for (int y = 1; y < chunk.height; y++)
+            if(GetBlock(below) == 0)
             {
+                ModifyBlock(below, 800);
 
-                 for (int x = 0; x < chunk._chunkSize; x++)
-                    {
-
-                    for (int z = 0; z < chunk._chunkSize; z++)
-                    {
-                        int id = copy[x, y, z];
-
-                        if (!IsWater(id))
-                            continue;
-
-                        int level = GetWaterLevel(id);
-
-                        if (chunk.blocks[x, y - 1, z] == 0)
-                        {
-                            chunk.blocks[x, y - 1, z] = 800;
-
-                            changed = true;
-                        }
-
-                        else if (level > 1)
-                        {
-                            SpreadWater(
-                                chunk,
-                                x + 1,
-                                y,
-                                z,
-                                level);
-
-                            SpreadWater(
-                                chunk,
-                                x - 1,
-                                y,
-                                z,
-                                level);
-
-                            SpreadWater(
-                                chunk,
-                                x,
-                                y,
-                                z + 1,
-                                level);
-
-                            SpreadWater(
-                                chunk,
-                                x,
-                                y,
-                                z - 1,
-                                level);
-
-                            changed = true;
-                        }
-                    }
-                }
+                newWater.Add(below);
             }
-
-            if (changed) chunk.SetDirty();
         }
+
+        activeWater.AddRange(newWater);
     }
 
     Vector2Int GetPlayerChunk()
@@ -291,6 +242,8 @@ public class BlockWorld : MonoBehaviour
                     int localWaterY = chunkMesh.WorldYToLocalY(waterY);
 
                     chunkMesh.blocks[x, localWaterY, z] = 8;
+
+                    activeWater.Add(new Vector3Int(worldX, waterY, worldZ));
                 }
             }
         }
@@ -389,6 +342,8 @@ public class BlockWorld : MonoBehaviour
 
         if (nextLevel <= 0) return;
         chunk.blocks[x, y, z] = 807 - nextLevel;
+
+        activeWater.Add(new Vector3Int(x, y + worldMinY, z));
     }
 
     public void ModifyBlock(Vector3Int worldPos,int blockID)
@@ -439,11 +394,6 @@ public class BlockWorld : MonoBehaviour
 
         return chunkMesh.blocks[x, localY, z];
 
-    }
-
-    bool IsWater(int id)
-    {
-        return id == 8 || id == 800 || id == 801 || id == 802 || id == 803 || id == 804 || id == 805 || id == 806;
     }
 
     int GetWaterLevel(int id)

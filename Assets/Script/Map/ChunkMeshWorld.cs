@@ -119,7 +119,7 @@ public class ChunkMeshWorld : MonoBehaviour
 
                     if (id == 0) continue;
 
-                    else if(id == 8)
+                    else if(IsWater(id))
                     {
 
                         CheckWaterFace(x, y, z, Vector3.forward);
@@ -180,7 +180,7 @@ public class ChunkMeshWorld : MonoBehaviour
         {
             int neighborID = blocks[nx, ny, nz];
             //‰½‚à‚È‚¢‹ó‹C‚Æ…ˆÈŠO‚È‚ç‰B‚·
-            if (neighborID != 0 && neighborID != 8) return;
+            if (neighborID != 0 && !IsWater(neighborID)) return;
         }
 
         AddFace(new Vector3(x, y + worldMinY, z), dir, blocks[x, y, z]);
@@ -196,7 +196,10 @@ public class ChunkMeshWorld : MonoBehaviour
            ny >= 0 && ny < height &&
            nz >= 0 && nz < _chunkSize)
         {
-            if (blocks[nx, ny, nz] != 0)
+            int neighborID = blocks[nx, ny, nz];
+            if (neighborID != 0)
+                return;
+            else if (IsWater(neighborID))
                 return;
         }
 
@@ -341,6 +344,12 @@ public class ChunkMeshWorld : MonoBehaviour
         waterUV.Add(uvOffset + new Vector2(size, size));
         waterUV.Add(uvOffset + new Vector2(0, size));
     }
+
+    bool IsWater(int id)
+    {
+        return id == 8 || (id >= 800 && id <= 806);
+    }
+
 
     Vector2 GetUV(int x, int y)
     {
