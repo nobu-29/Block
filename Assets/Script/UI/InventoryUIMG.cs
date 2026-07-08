@@ -8,6 +8,8 @@ public class InventoryUIMG : MonoBehaviour
     public Inventory _inventory;
     public InventoryUISlot[] _inventoryslots;
 
+    public int dragIndex = -1;
+
     private bool isOpen = false;
 
     public void ToggleInventory(InputAction.CallbackContext context)
@@ -46,6 +48,17 @@ public class InventoryUIMG : MonoBehaviour
                 _inventoryslots[i].countText.text = "";
             }
         }
+    }
+
+    public void SwapSlots(int from, int to)
+    {
+        var temp = _inventory.myinventory[from];
+
+        _inventory.myinventory[from] = _inventory.myinventory[to];
+
+        _inventory.myinventory[to] = temp;
+
+        UpdateUI();
     }
 }
 

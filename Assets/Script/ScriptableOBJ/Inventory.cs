@@ -52,6 +52,15 @@ public class Inventory : ScriptableObject
         myinventory.Clear();
     }
 
+    public void SwapSlot(int a,int b)
+    {
+        var temp = myinventory[a];
+
+        myinventory[a] = myinventory[b];
+
+        myinventory[b] = temp;
+    }
+
 /*    public void AnatherInventory()
     {
         List<ItemObject> anatherinventory = myinventory;
