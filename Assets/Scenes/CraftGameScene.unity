@@ -2399,7 +2399,7 @@ MonoBehaviour:
   playerBody: {fileID: 1923960922}
   cameraHolder: {fileID: 1210267265}
   sensitivityMouse: 1
-  sensitivityGamepad: 100
+  sensitivityGamepad: 1
 --- !u!1 &1418448757
 GameObject:
   m_ObjectHideFlags: 0

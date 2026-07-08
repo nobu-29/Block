@@ -41,7 +41,7 @@ public class PayerCamera : MonoBehaviour
             if(stick.magnitude < 0.1f)
                 stick = Vector2.zero;
 
-            lookInput = stick * sensitivityGamepad * Time.deltaTime;
+            lookInput = stick * sensitivityGamepad;
         }
     }
 }
