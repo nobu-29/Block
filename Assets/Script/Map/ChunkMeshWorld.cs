@@ -9,6 +9,9 @@ public class ChunkMeshWorld : MonoBehaviour
     public int height = 96;
     public int worldMinY = -32;
 
+    [Header("イラストの分母")]
+    public float denominator = 4f;
+
     public int[,,] blocks;
 
     //ブロックに使うマテリアル設定
@@ -265,7 +268,7 @@ public class ChunkMeshWorld : MonoBehaviour
         triangles.Add(v + 3);
 
         Vector2 uvOffset = GetUVByFace(blockID,dir);
-        float size = 0.25f; // 4x4テクスチャ想定
+        float size = 1f / denominator; // 4x4テクスチャ想定
 
         uv.Add(uvOffset + new Vector2(0, 0));
         uv.Add(uvOffset + new Vector2(size, 0));
@@ -337,7 +340,7 @@ public class ChunkMeshWorld : MonoBehaviour
         waterTriangles.Add(v + 3);
 
         Vector2 uvOffset = GetUV(1, 3);
-        float size = 0.25f;
+        float size = 1f / denominator;
 
         waterUV.Add(uvOffset + new Vector2(0, 0));
         waterUV.Add(uvOffset + new Vector2(size, 0));
@@ -353,9 +356,9 @@ public class ChunkMeshWorld : MonoBehaviour
 
     Vector2 GetUV(int x, int y)
     {
-        float size = 0.25f;
+        float size = 1f / denominator;
 
-        return new Vector2(x * size, (3 - y) * size);
+        return new Vector2(x * size, ((int)denominator - 1 - y) * size);
     }
 
     //↓ブロックに使うメッシュの設定箇所
@@ -395,9 +398,9 @@ public class ChunkMeshWorld : MonoBehaviour
         else if (id == 5)
             return GetUV(3, 2);
 
-        // 水
+/*        // 水
         else if (id == 8 || id == 800 || id == 801 || id == 802 || id == 803 || id == 804 || id == 805 || id == 806)
-            return GetUV(1, 3);
+            return GetUV(1, 3);*/
 
         // 雪
         else if (id == 9)

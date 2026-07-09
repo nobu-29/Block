@@ -126,6 +126,7 @@ MonoBehaviour:
   _chunkSize: 16
   height: 256
   worldMinY: -32
+  denominator: 8
   _material: {fileID: 2100000, guid: a7b88844c66d0014bb8a105b799a0cf3, type: 2}
   _waterMaterial: {fileID: 2100000, guid: d2dda30e60e3d274fb4bf3393fd6d983, type: 2}
   _waterMeshFilter: {fileID: 7500784818900392880}
