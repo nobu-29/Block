@@ -1437,11 +1437,11 @@ MonoBehaviour:
   viewDistance: 5
   worldSize: 10
   maxheight: 128
-  worldMinY: -32
+  worldMinY: -64
   worldMaxY: 192
   seaLevel: 10
   treeRate: 1
-  noiseScale: 0.15
+  noiseScale: 0.5
   noiseScale_mini: 0.2
   heightMultiplier: 10
   heightMultiplier_mini: 4
@@ -3186,7 +3186,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &720234359
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9017,7 +9017,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MoveSpeed: 5
   MoveBoost: 2
-  JumpPower: 5
+  JumpPower: 7
   _camera: {fileID: 1210267262}
   _rb: {fileID: 1923960925}
   _hotbar: {fileID: 718096206}

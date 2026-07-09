@@ -34,7 +34,7 @@ public class PlayerControler : MonoBehaviour
 
     private void Update()
     {
-        if (transform.position.y <= blockchunk.worldMinY) transform.position = _resetPos;
+        if (transform.position.y <= blockchunk.worldMinY@- 10) transform.position = _resetPos;
     }
 
     void FixedUpdate()
@@ -62,7 +62,15 @@ public class PlayerControler : MonoBehaviour
         DrawBlockOutline();
         //HandleOutline();
 
-        if (IsInWater()) _rb.AddForce(Vector3.up * 5f, ForceMode.Force);
+        if (IsInWater()) _rb.AddForce(Vector3.up * JumpPower, ForceMode.Force);
+
+        //—Ž‰ºŽž
+        if (_rb.linearVelocity.y < 0)
+            _rb.AddForce(Physics.gravity * 2f, ForceMode.Acceleration);
+
+        //ã¸Žž
+        else if (_rb.linearVelocity.y > 0)
+            _rb.AddForce(Physics.gravity * 1.2f, ForceMode.Acceleration);
     }
 
     public void Move(InputAction.CallbackContext context)
