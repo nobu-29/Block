@@ -12,7 +12,17 @@ public class InventoryUIMG : MonoBehaviour
 
     public bool dragFromHotbar;
 
+    public int currentSlot = 0;
+
+    public PlayerInput _playerInput;
+
+    public int selectedSlot;
+
     private bool isOpen = false;
+    private int heldSlot = -1;
+
+    private float moveDelay = 0.15f;
+    private float nextMoveTime;
 
     public void ToggleInventory(InputAction.CallbackContext context)
     {
@@ -23,7 +33,14 @@ public class InventoryUIMG : MonoBehaviour
         inventoryPanel.SetActive(isOpen);
 
         if (isOpen)
+        {
             UpdateUI();
+            _playerInput.SwitchCurrentActionMap("UI");
+        }
+        else
+        {
+            _playerInput.SwitchCurrentActionMap("Player");
+        }
     }
 
     public void UpdateUI()
@@ -66,6 +83,49 @@ public class InventoryUIMG : MonoBehaviour
 
         UpdateUI();
     }
+
+    public void MoveCursor(InputAction.CallbackContext context)
+    {
+        if (Time.time < nextMoveTime) return;
+
+        var input = context.ReadValue<Vector2>();
+
+        if (input.x > 0.5f)
+            currentSlot++;
+        else if (input.x < -0.5f)
+            currentSlot--;
+        else if (input.y > 0.5f)
+            currentSlot -= 7;
+        else if (input.y < -0.5f)
+            currentSlot += 7;
+        else
+            return;
+
+        nextMoveTime = Time.time + moveDelay;
+
+        currentSlot = Mathf.Clamp(currentSlot, 0, _inventoryslots.Length - 1);
+
+        UpdateSelection();
+    }
+
+    void UpdateSelection()
+    {
+        for (int i = 0; i < _inventoryslots.Length; i++)
+           _inventoryslots[i].selecctionFrame.enabled = (i == currentSlot);
+    }
+    public void Submit(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+        
+        if (heldSlot == -1)
+            heldSlot = currentSlot;
+        else
+        { 
+            SwapSlots(heldSlot + _inventory.hotbarSize, currentSlot + _inventory.hotbarSize);
+
+            heldSlot = -1;
+        }
+    }
 }
 
 [System.Serializable]
@@ -73,4 +133,6 @@ public class InventoryUISlot
 {
     public Image icon;
     public Text countText;
+
+    public Image selecctionFrame;
 }

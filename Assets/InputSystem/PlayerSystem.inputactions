@@ -432,6 +432,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "UIClose",
+                    "type": "Button",
+                    "id": "b38fc79f-ff71-4380-972f-4271d0563bf5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "UISubmit",
                     "type": "Button",
                     "id": "034ac2b9-e181-450f-aabe-a228e6524b0c",
@@ -569,6 +578,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "UIMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d1ddbe6a-1226-4f78-b7e0-8f7b5470f171",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UIClose",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b7c7de3e-60ab-43c6-864b-06b94200a06f",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UIClose",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

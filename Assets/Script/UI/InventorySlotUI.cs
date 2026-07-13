@@ -9,6 +9,8 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public InventoryUIMG inventoryUI;
     public Image slotIcon;
 
+    public Image selection;
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         inventoryUI.dragFromHotbar = false;
@@ -21,7 +23,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnDrag(PointerEventData eventData)
     {
-
+        inventoryUI.SwapSlots(inventoryUI.dragIndex, slotIndex);
     }
 
     public void OnEndDrag(PointerEventData eventData)

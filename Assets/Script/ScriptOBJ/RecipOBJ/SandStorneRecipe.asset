@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: SandStorneRecipe
   m_EditorClassIdentifier: 
   recipeGrid:
+  - {fileID: 11400000, guid: 38795e32612f84f40962f3f75a7ae67d, type: 2}
+  - {fileID: 11400000, guid: 298de847ceed3ed479ccf472f12b5d31, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 298de847ceed3ed479ccf472f12b5d31, type: 2}
+  - {fileID: 11400000, guid: 38795e32612f84f40962f3f75a7ae67d, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  resultItem: {fileID: 0}
+  resultItem: {fileID: 11400000, guid: f1e7165a11991d5478766801d5449806, type: 2}
   resultAmount: 1

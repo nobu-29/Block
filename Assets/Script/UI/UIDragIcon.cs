@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -23,10 +24,5 @@ public class UIDragIcon : MonoBehaviour
     public void Hide()
     {
         gameObject.SetActive(false);
-    }
-
-    public void OnCorsol(InputAction.CallbackContext context)
-    {
-            transform.position = context.ReadValue<Vector2>();
     }
 }
