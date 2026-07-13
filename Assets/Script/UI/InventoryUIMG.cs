@@ -10,6 +10,8 @@ public class InventoryUIMG : MonoBehaviour
 
     public int dragIndex = -1;
 
+    public bool dragFromHotbar;
+
     private bool isOpen = false;
 
     public void ToggleInventory(InputAction.CallbackContext context)
@@ -52,6 +54,10 @@ public class InventoryUIMG : MonoBehaviour
 
     public void SwapSlots(int from, int to)
     {
+        if (from < 0 || from >= _inventory.myinventory.Count) return;
+
+        if (to < 0 || to >= _inventory.myinventory.Count) return;
+
         var temp = _inventory.myinventory[from];
 
         _inventory.myinventory[from] = _inventory.myinventory[to];
