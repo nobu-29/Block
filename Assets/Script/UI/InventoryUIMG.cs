@@ -4,10 +4,20 @@ using UnityEngine.UI;
 
 public class InventoryUIMG : MonoBehaviour
 {
+    public enum UIArea
+    {
+        Inventory,
+        CraftGrid,
+        CraftResult
+    }
+
+    public UIArea currentArea = UIArea.Inventory;
+
     public GameObject inventoryPanel;
     public Inventory _inventory;
     public InventoryUISlot[] _inventoryslots;
     public HotbarMG _hotbarslots;
+    public CraftUIMG _craftUI;
 
     public int dragIndex = -1;
 
@@ -45,6 +55,7 @@ public class InventoryUIMG : MonoBehaviour
             UpdateUI();
             UpdateSelection();
             _hotbarslots.UpdateUI();
+            _craftUI.UpdataCraftSelection();
             _playerInput.SwitchCurrentActionMap("UI");
         }
         else
@@ -105,6 +116,28 @@ public class InventoryUIMG : MonoBehaviour
 
         var input = context.ReadValue<Vector2>();
 
+        switch (currentArea)
+        {
+            case UIArea.Inventory :
+                MoveInventoryCursor(input);
+                break;
+
+            case UIArea.CraftGrid:
+                MoveCraftCursor(input);
+                break;
+
+            case UIArea.CraftResult:
+                //MoveResultCursor(input);
+                break;
+        }
+
+        nextMoveTime = Time.time + moveDelay;
+
+        
+    }
+
+    void MoveInventoryCursor(Vector2 input)
+    {
         if (input.x > 0.5f)
             currentSlot++;
         else if (input.x < -0.5f)
@@ -116,7 +149,7 @@ public class InventoryUIMG : MonoBehaviour
 
             currentSlot -= 7;
 
-            if(currentSlot < 0)
+            if (currentSlot < 0)
             {
                 selectingHotbar = true;
                 currentSlot = Mathf.Abs(currentSlot);
@@ -134,13 +167,39 @@ public class InventoryUIMG : MonoBehaviour
 
         nextMoveTime = Time.time + moveDelay;
 
-        if(selectingHotbar)
+        if (selectingHotbar)
             currentSlot = Mathf.Clamp(currentSlot, 0, _hotbarslots.slots.Length - 1);
         else
             currentSlot = Mathf.Clamp(currentSlot, 0, _inventoryslots.Length - 1);
 
         UpdateSelection();
     }
+
+    void
+MoveCraftCursor(
+    Vector2 input)
+    {
+        if (input.x > 0.5f)
+            _craftUI.currentCraftSlot++;
+
+        else if (input.x < -0.5f)
+            _craftUI.currentCraftSlot--;
+
+        else if (input.y > 0.5f)
+            _craftUI.currentCraftSlot -= 3;
+
+        else if (input.y < -0.5f)
+            _craftUI.currentCraftSlot += 3;
+
+        _craftUI.currentCraftSlot =
+            Mathf.Clamp(
+                _craftUI.currentCraftSlot,
+                0,
+                8);
+
+        _craftUI.UpdataCraftSelection();
+    }
+
 
     void UpdateSelection()
     {
@@ -203,6 +262,35 @@ public class InventoryUIMG : MonoBehaviour
         UpdateSelection();
         _hotbarslots.UpdateUI();
     }
+
+
+    public void SwitchArea(
+        InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+            return;
+
+        switch (currentArea)
+        {
+            case UIArea.Inventory:
+                currentArea =
+                    UIArea.CraftGrid;
+                break;
+
+            case UIArea.CraftGrid:
+                currentArea =
+                    UIArea.CraftResult;
+                break;
+
+            case UIArea.CraftResult:
+                currentArea =
+                    UIArea.Inventory;
+                break;
+        }
+
+        //RefreshSelection();
+    }
+
 }
 
 [System.Serializable]
