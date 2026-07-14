@@ -450,9 +450,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "UICancel",
+                    "name": "UICraft",
                     "type": "Button",
-                    "id": "fa3b6ddb-687c-4fc4-9880-a8c007481ce4",
+                    "id": "387af14a-0d3e-48dd-98af-5af3a6b23adf",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -616,12 +616,12 @@
                 },
                 {
                     "name": "",
-                    "id": "711c9f0f-6ce6-4306-8036-38bfd40cd912",
-                    "path": "<Gamepad>/buttonEast",
+                    "id": "5feb44e4-a0e3-4d30-a65e-b2152ec7c71a",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "UICancel",
+                    "action": "UICraft",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
