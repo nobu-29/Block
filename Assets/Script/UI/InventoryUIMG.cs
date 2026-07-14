@@ -7,10 +7,12 @@ public class InventoryUIMG : MonoBehaviour
     public GameObject inventoryPanel;
     public Inventory _inventory;
     public InventoryUISlot[] _inventoryslots;
+    public HotbarMG _hotbarslots;
 
     public int dragIndex = -1;
 
     public bool dragFromHotbar;
+    public bool selectingHotbar = false;
 
     public int currentSlot = 0;
 
@@ -19,10 +21,12 @@ public class InventoryUIMG : MonoBehaviour
     public int selectedSlot;
 
     public Color normalColor = Color.white;
-    public Color selectedColor = Color.yellow;
-    public Color heldColor = Color.green;
+    public Color selectedColor = Color.green;
+    public Color heldColor = Color.yellow;
 
     private bool isOpen = false;
+    private bool heldFromHotbar;
+
     private int heldSlot = -1;
 
     private float moveDelay = 0.15f;
@@ -39,6 +43,8 @@ public class InventoryUIMG : MonoBehaviour
         if (isOpen)
         {
             UpdateUI();
+            UpdateSelection();
+            _hotbarslots.UpdateUI();
             _playerInput.SwitchCurrentActionMap("UI");
         }
         else
@@ -90,6 +96,7 @@ public class InventoryUIMG : MonoBehaviour
         _inventory.myinventory[to] = temp;
 
         UpdateUI();
+        _hotbarslots.UpdateUI();
     }
 
     public void MoveCursor(InputAction.CallbackContext context)
@@ -103,49 +110,98 @@ public class InventoryUIMG : MonoBehaviour
         else if (input.x < -0.5f)
             currentSlot--;
         else if (input.y > 0.5f)
+        {
+            if (selectingHotbar)
+                return;
+
             currentSlot -= 7;
+
+            if(currentSlot < 0)
+            {
+                selectingHotbar = true;
+                currentSlot = Mathf.Abs(currentSlot);
+            }
+        }
         else if (input.y < -0.5f)
-            currentSlot += 7;
+        {
+            if (selectingHotbar)
+                selectingHotbar = false;
+            else
+                currentSlot += 7;
+        }
         else
             return;
 
         nextMoveTime = Time.time + moveDelay;
 
-        currentSlot = Mathf.Clamp(currentSlot, 0, _inventoryslots.Length - 1);
+        if(selectingHotbar)
+            currentSlot = Mathf.Clamp(currentSlot, 0, _hotbarslots.slots.Length - 1);
+        else
+            currentSlot = Mathf.Clamp(currentSlot, 0, _inventoryslots.Length - 1);
 
         UpdateSelection();
     }
 
     void UpdateSelection()
     {
+        //Inventoryカラー処理
         for (int i = 0; i < _inventoryslots.Length; i++)
         {
-            if (_inventoryslots[i].selecctionFrame == null)
-                continue;
+            Color color = normalColor;
 
-            if (i == heldSlot)
-                _inventoryslots[i].selecctionFrame.color = heldColor;
-            else if (i == currentSlot)
-                _inventoryslots[i].selecctionFrame.color = selectedColor;
-            else
-                _inventoryslots[i].selecctionFrame.color = normalColor;
+            if (!selectingHotbar)
+            {
+                if (i == heldSlot && !heldFromHotbar)
+                    color = heldColor;
+
+                else if (i == currentSlot)
+                    color = selectedColor;
+            }
+
+            _inventoryslots[i].selecctionFrame.color = color;
+
+        }
+
+        //Hotbarカラー処理
+        for (int i = 0; i < _hotbarslots.slots.Length; i++)
+        {
+            Color color = normalColor;
+
+            if (selectingHotbar)
+            {
+                if (heldFromHotbar && heldSlot == i)
+                    color = heldColor;
+
+                else if (currentSlot == i)
+                    color = selectedColor;
+            }
+            _hotbarslots.slots[i].select.color = color;
         }
     }
 
     public void Submit(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
-        
+
         if (heldSlot == -1)
+        {
             heldSlot = currentSlot;
+            heldFromHotbar = selectingHotbar;
+        }
         else
         {
-            SwapSlots( heldSlot + _inventory.hotbarSize, currentSlot + _inventory.hotbarSize);
+            int from = heldFromHotbar ? heldSlot : heldSlot + _inventory.hotbarSize;
+
+            int to = selectingHotbar ? currentSlot : currentSlot + _inventory.hotbarSize;
+            
+            SwapSlots(from, to);
 
             heldSlot = -1;
+            heldFromHotbar = false;
         }
 
         UpdateSelection();
+        _hotbarslots.UpdateUI();
     }
 }
 
