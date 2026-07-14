@@ -185,9 +185,6 @@ public class PlayerControler : MonoBehaviour
 
         bool grounded = Physics.Raycast(transform.position, Vector3.down, checkDistance, LayerMask.GetMask("Block"));
 
-        Debug.Log(grounded);
-        Debug.DrawRay(transform.position, Vector3.down * checkDistance, grounded ? Color.green : Color.red);
-
         return  grounded;
     }
 
