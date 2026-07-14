@@ -18,6 +18,10 @@ public class InventoryUIMG : MonoBehaviour
 
     public int selectedSlot;
 
+    public Color normalColor = Color.white;
+    public Color selectedColor = Color.yellow;
+    public Color heldColor = Color.green;
+
     private bool isOpen = false;
     private int heldSlot = -1;
 
@@ -49,7 +53,9 @@ public class InventoryUIMG : MonoBehaviour
         {
             int inventoryIndex = i + _inventory.hotbarSize;
 
-            if (inventoryIndex < _inventory.myinventory.Count)
+            if (inventoryIndex < _inventory.myinventory.Length &&
+                _inventory.myinventory[inventoryIndex] != null &&
+                _inventory.myinventory[inventoryIndex].item != null)
             {
                 var data = _inventory.myinventory[inventoryIndex];
 
@@ -71,9 +77,11 @@ public class InventoryUIMG : MonoBehaviour
 
     public void SwapSlots(int from, int to)
     {
-        if (from < 0 || from >= _inventory.myinventory.Count) return;
+        if (to < 0) return;
 
-        if (to < 0 || to >= _inventory.myinventory.Count) return;
+        if (from < 0 || from >= _inventory.myinventory.Length) return;
+
+        if ( to >= _inventory.myinventory.Length) return;
 
         var temp = _inventory.myinventory[from];
 
@@ -111,8 +119,19 @@ public class InventoryUIMG : MonoBehaviour
     void UpdateSelection()
     {
         for (int i = 0; i < _inventoryslots.Length; i++)
-           _inventoryslots[i].selecctionFrame.enabled = (i == currentSlot);
+        {
+            if (_inventoryslots[i].selecctionFrame == null)
+                continue;
+
+            if (i == heldSlot)
+                _inventoryslots[i].selecctionFrame.color = heldColor;
+            else if (i == currentSlot)
+                _inventoryslots[i].selecctionFrame.color = selectedColor;
+            else
+                _inventoryslots[i].selecctionFrame.color = normalColor;
+        }
     }
+
     public void Submit(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
@@ -120,11 +139,13 @@ public class InventoryUIMG : MonoBehaviour
         if (heldSlot == -1)
             heldSlot = currentSlot;
         else
-        { 
-            SwapSlots(heldSlot + _inventory.hotbarSize, currentSlot + _inventory.hotbarSize);
+        {
+            SwapSlots( heldSlot + _inventory.hotbarSize, currentSlot + _inventory.hotbarSize);
 
             heldSlot = -1;
         }
+
+        UpdateSelection();
     }
 }
 

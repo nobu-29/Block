@@ -14,7 +14,7 @@ public class HotbarSlotUI : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
 
         _inventoryUI.dragIndex = slotIndex;
 
-        if (slotIndex < _inventory.myinventory.Count)
+        if (slotIndex < _inventory.myinventory.Length)
         {
             UIDragIcon.Instance.Show(
                 _inventory.myinventory[slotIndex]
@@ -33,6 +33,12 @@ public class HotbarSlotUI : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
     {
         if (_inventoryUI.dragIndex == slotIndex)
             return;
+
+
+        Debug.Log(
+                $"Hotbar Drop : {_inventoryUI.dragIndex} -> {slotIndex}"
+            );
+
 
         _inventoryUI.SwapSlots(
             _inventoryUI.dragIndex,

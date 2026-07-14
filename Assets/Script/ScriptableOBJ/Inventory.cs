@@ -4,15 +4,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Inventory", menuName = "Game/Inventory")]
 public class Inventory : ScriptableObject
 {
-    public List<InventorySlot> myinventory = new List<InventorySlot>();
+    public InventorySlot[] myinventory = new InventorySlot[28];
     public int maxStack = 100;
 
     public int hotbarSize = 7;
 
     public void itemGet(ItemObject item)
     {
-        foreach (var slot in myinventory)
+       for(int i = 0; i < myinventory.Length; i++)
         {
+            var slot = myinventory[i];
+
+            if (slot == null) continue;
+
             if(slot.item == item && slot.count < maxStack)
             {
                 slot.count++;
@@ -20,7 +24,16 @@ public class Inventory : ScriptableObject
             }
         }
 
-        myinventory.Add(new InventorySlot { item = item, count = 1 });
+        for (int i = 0; i < myinventory.Length; i++)
+        {
+            if (myinventory[i].item == null)
+            {
+                myinventory[i].item = item;
+                myinventory[i].count = 1;
+                return;
+            }
+        }
+
     }
 
     public void ItemRemove(ItemObject item)
@@ -30,8 +43,11 @@ public class Inventory : ScriptableObject
             if(slot.item == item)
             {
                 slot.count--;
-                if (slot.count <= 0)
-                    myinventory.Remove(slot);
+                if(slot.count <= 0)
+                {
+                    slot.item = null;
+                    slot.count = 0;
+                }
                 return;
             }
         }
@@ -41,6 +57,8 @@ public class Inventory : ScriptableObject
     {
         foreach(var slot in myinventory)
         {
+            if (slot == null) continue;
+
             if (slot.item == item && slot.count > 0)
                 return true;
         }
@@ -49,7 +67,16 @@ public class Inventory : ScriptableObject
 
     public void ResetInventory()
     {
-        myinventory.Clear();
+
+        for (int i = 0; i < myinventory.Length; i++)
+        {
+            if (myinventory[i] == null)
+                myinventory[i] = new InventorySlot();
+
+            myinventory[i].item = null;
+            myinventory[i].count = 0;
+        }
+
     }
 
     public void SwapSlot(int a,int b)
@@ -61,10 +88,19 @@ public class Inventory : ScriptableObject
         myinventory[b] = temp;
     }
 
-/*    public void AnatherInventory()
+    /*    public void AnatherInventory()
+        {
+            List<ItemObject> anatherinventory = myinventory;
+        }*/
+
+    private void OnEnable()
     {
-        List<ItemObject> anatherinventory = myinventory;
-    }*/
+        for(int i = 0; i < myinventory.Length; i++)
+        {
+            if (myinventory[i] == null)
+                myinventory[i] = new InventorySlot();
+        }
+    }
 }
 
 [System.Serializable]
@@ -72,4 +108,9 @@ public class InventorySlot
 {
     public ItemObject item;
     public int count;
+
+    public bool IsEmpty()
+    {
+        return item == null;
+    }
 }

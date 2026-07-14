@@ -23,7 +23,7 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnDrag(PointerEventData eventData)
     {
-        inventoryUI.SwapSlots(inventoryUI.dragIndex, slotIndex);
+        //inventoryUI.SwapSlots(inventoryUI.dragIndex, slotIndex);
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -34,6 +34,12 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public void OnDrop(PointerEventData eventData)
     {
         if (inventoryUI.dragIndex == slotIndex) return;
+
+
+        Debug.Log(
+                $"Inventory Drop : {inventoryUI.dragIndex} -> {slotIndex}"
+            );
+
 
         inventoryUI.SwapSlots(inventoryUI.dragIndex,slotIndex + inventoryUI._inventory.hotbarSize);
     }
