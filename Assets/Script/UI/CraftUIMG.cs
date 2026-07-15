@@ -68,7 +68,7 @@ public class CraftUIMG : MonoBehaviour
 
     }
 
-    public void MoveCraftCursor(InputAction.CallbackContext context)
+/*    public void MoveCraftCursor(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
 
@@ -89,7 +89,7 @@ public class CraftUIMG : MonoBehaviour
         currentCraftSlot = Mathf.Clamp(currentCraftSlot, 0, _craftSlots.Length - 1);
 
         UpdataCraftSelection();
-    }
+    }*/
 
     public void SubmitCraft(InputAction.CallbackContext context)
     {

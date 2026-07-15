@@ -34,6 +34,9 @@ public class InventoryUIMG : MonoBehaviour
     public Color selectedColor = Color.green;
     public Color heldColor = Color.yellow;
 
+    public float _inventoryMoveDelay = 0.05f;
+    public float _craftMoveDelay = 0.25f;
+
     private bool isOpen = false;
     private bool heldFromHotbar;
 
@@ -119,14 +122,17 @@ public class InventoryUIMG : MonoBehaviour
         switch (currentArea)
         {
             case UIArea.Inventory :
+                moveDelay = _inventoryMoveDelay;
                 MoveInventoryCursor(input);
                 break;
 
             case UIArea.CraftGrid:
+                moveDelay = _craftMoveDelay;
                 MoveCraftCursor(input);
                 break;
 
             case UIArea.CraftResult:
+                moveDelay = _craftMoveDelay;
                 //MoveResultCursor(input);
                 break;
         }
@@ -176,8 +182,7 @@ public class InventoryUIMG : MonoBehaviour
     }
 
     void
-MoveCraftCursor(
-    Vector2 input)
+    MoveCraftCursor(Vector2 input)
     {
         if (input.x > 0.5f)
             _craftUI.currentCraftSlot++;
@@ -191,11 +196,7 @@ MoveCraftCursor(
         else if (input.y < -0.5f)
             _craftUI.currentCraftSlot += 3;
 
-        _craftUI.currentCraftSlot =
-            Mathf.Clamp(
-                _craftUI.currentCraftSlot,
-                0,
-                8);
+        _craftUI.currentCraftSlot = Mathf.Clamp(_craftUI.currentCraftSlot,0,8);
 
         _craftUI.UpdataCraftSelection();
     }
@@ -288,7 +289,14 @@ MoveCraftCursor(
                 break;
         }
 
-        //RefreshSelection();
+        RefreshSelection();
+    }
+
+    void RefreshSelection()
+    {
+        UpdateSelection();
+
+        _craftUI.UpdataCraftSelection();
     }
 
 }

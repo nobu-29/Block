@@ -1413,7 +1413,7 @@ MonoBehaviour:
     countText: {fileID: 1176004744}
     selecctionFrame: {fileID: 2094711886}
   _hotbarslots: {fileID: 718096206}
-  _craftUI: {fileID: 0}
+  _craftUI: {fileID: 36908258}
   dragIndex: -1
   dragFromHotbar: 0
   selectingHotbar: 0
@@ -1423,6 +1423,8 @@ MonoBehaviour:
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   selectedColor: {r: 0, g: 1, b: 0, a: 1}
   heldColor: {r: 1, g: 0.9622972, b: 0, a: 1}
+  _inventoryMoveDelay: 0.08
+  _craftMoveDelay: 0.17
 --- !u!1 &271848805
 GameObject:
   m_ObjectHideFlags: 0
@@ -12803,18 +12805,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 36908258}
-        m_TargetAssemblyTypeName: CraftUIMG, Assembly-CSharp
-        m_MethodName: MoveCraftCursor
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
     m_ActionId: bdbc86b6-c100-491b-b47b-bdb58a18889f
     m_ActionName: 'UI/CursolMove[/XInputControllerWindows/leftStick,/Keyboard/w,/Keyboard/upArrow,/Keyboard/s,/Keyboard/downArrow,/Keyboard/a,/Keyboard/leftArrow,/Keyboard/d,/Keyboard/rightArrow]'
   - m_PersistentCalls:
@@ -12865,6 +12855,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 387af14a-0d3e-48dd-98af-5af3a6b23adf
     m_ActionName: UI/UICraft
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 271098823}
+        m_TargetAssemblyTypeName: InventoryUIMG, Assembly-CSharp
+        m_MethodName: SwitchArea
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 8a67feaf-dcfa-4894-b678-140f289de034
+    m_ActionName: UI/UIModeChage
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

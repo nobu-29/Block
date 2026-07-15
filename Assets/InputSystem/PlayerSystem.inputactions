@@ -457,6 +457,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "UIModeChage",
+                    "type": "Button",
+                    "id": "8a67feaf-dcfa-4894-b678-140f289de034",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -622,6 +631,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "UICraft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "30e6fde9-2a7b-4c19-885f-14741b46d813",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UIModeChage",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
