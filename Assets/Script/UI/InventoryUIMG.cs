@@ -13,7 +13,15 @@ public class InventoryUIMG : MonoBehaviour
 
     public UIArea currentArea = UIArea.Inventory;
 
+    public enum UITab
+    {
+        Craft,
+        Furnace
+    }
+    public UITab TabArea = UITab.Craft;
+
     public GameObject inventoryPanel;
+    public GameObject _furnacePanel;
     public Inventory _inventory;
     public InventoryUISlot[] _inventoryslots;
     public HotbarMG _hotbarslots;
@@ -132,8 +140,11 @@ public class InventoryUIMG : MonoBehaviour
                 break;
 
             case UIArea.CraftResult:
-                moveDelay = _craftMoveDelay;
-                //MoveResultCursor(input);
+                if(input.x < -0.5f)
+                {
+                    currentArea = UIArea.CraftGrid;
+                    RefreshSelection();
+                }
                 break;
         }
 
@@ -198,6 +209,13 @@ public class InventoryUIMG : MonoBehaviour
 
         _craftUI.currentCraftSlot = Mathf.Clamp(_craftUI.currentCraftSlot,0,8);
 
+        if(input.x > 0.5f && _craftUI.currentCraftSlot == 8)
+        {
+            currentArea = UIArea.CraftResult;
+            RefreshSelection();
+            return;
+        }
+
         _craftUI.UpdataCraftSelection();
     }
 
@@ -241,6 +259,12 @@ public class InventoryUIMG : MonoBehaviour
 
     public void Submit(InputAction.CallbackContext context)
     {
+        if(currentArea == UIArea.CraftResult)
+        {
+            _craftUI.Craft();
+            return;
+        }
+
         if (!context.performed) return;
 
         if (heldSlot == -1)
@@ -292,11 +316,30 @@ public class InventoryUIMG : MonoBehaviour
         RefreshSelection();
     }
 
+    public void SwitchTabArea(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+
+        switch (TabArea)
+        {
+            case UITab.Craft:
+                TabArea = UITab.Furnace;
+                _furnacePanel.SetActive(true);
+                break;
+            case UITab.Furnace:
+                TabArea = UITab.Craft;
+                _furnacePanel.SetActive(false);
+                break;
+        }
+    }
+
     void RefreshSelection()
     {
         UpdateSelection();
 
         _craftUI.UpdataCraftSelection();
+
+        _craftUI.resultSlot.SetSelect(currentArea == UIArea.CraftResult);
     }
 
 }

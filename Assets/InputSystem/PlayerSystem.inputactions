@@ -466,6 +466,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "UITabChange",
+                    "type": "Button",
+                    "id": "3e83aec3-14df-4918-a909-7a6f169b73c5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -642,6 +651,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "UIModeChage",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "97f78614-3bb6-4aa5-ae4e-bdb55aff01c4",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UITabChange",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

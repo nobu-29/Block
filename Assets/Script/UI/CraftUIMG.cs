@@ -54,7 +54,10 @@ public class CraftUIMG : MonoBehaviour
         ItemObject[] currentGrid = new ItemObject[9];
 
         for (int i = 0; i < 9; i++)
-            currentGrid[i] = _craftSlots[i].currentItem;
+        {
+            if (_craftSlots[i].currentItem != null)
+                _craftSlots[i].ConsumeItem(1);
+        }
 
         CraftingRecipe recipe = _craftSystem.CheckRecipe(currentGrid);
         if (recipe == null) return;
@@ -68,28 +71,22 @@ public class CraftUIMG : MonoBehaviour
 
     }
 
-/*    public void MoveCraftCursor(InputAction.CallbackContext context)
+    public void CraftAll()
     {
-        if (!context.performed) return;
+        while (true)
+        {
+            ItemObject[] currentGrid = new ItemObject[9];
 
-        Vector2 input = context.ReadValue<Vector2>();
+            for(int i = 0; i < 9; i++)
+                currentGrid[i] = _craftSlots[i].currentItem;
 
-        if (input.x > 0.5f)
-            currentCraftSlot++;
+            CraftingRecipe recipe = _craftSystem.CheckRecipe(currentGrid);
 
-        else if (input.x < -0.5f)
-            currentCraftSlot--;
+            if (recipe == null) break;
 
-        else if (input.y > 0.5f)
-            currentCraftSlot -= 3;
-
-        else if (input.y < -0.5f)
-            currentCraftSlot += 3;
-
-        currentCraftSlot = Mathf.Clamp(currentCraftSlot, 0, _craftSlots.Length - 1);
-
-        UpdataCraftSelection();
-    }*/
+            Craft();
+        }
+    }
 
     public void SubmitCraft(InputAction.CallbackContext context)
     {

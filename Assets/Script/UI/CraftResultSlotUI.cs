@@ -6,6 +6,7 @@ public class CraftResultSlotUI : MonoBehaviour
     public Image _resulticon;
 
     public ItemObject currentItem;
+    public Image selectionFrame;
 
     public void SetItem(ItemObject item)
     {
@@ -19,5 +20,10 @@ public class CraftResultSlotUI : MonoBehaviour
     {
         currentItem = null;
         _resulticon.enabled = false;
+    }
+
+    public void SetSelect(bool value)
+    {
+        selectionFrame.color = value ? Color.green : Color.white;
     }
 }

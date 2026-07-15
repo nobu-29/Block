@@ -11,6 +11,7 @@ public class CraftSlotUI : MonoBehaviour, IDropHandler
     public Image _crafticon;
     public int count;
     public ItemObject currentItem;
+    public Text countText;
 
     public Image selectionFrame;
 
@@ -28,17 +29,22 @@ public class CraftSlotUI : MonoBehaviour, IDropHandler
 
         SetItem(slot.item);
 
+        count = 1;
+
         craftUI.UpdateRecipe();
     }
 
-    public void SetItem(ItemObject item)
+    public void SetItem(ItemObject item, int itemCount = 1)
     {
         currentItem = item;
+        count = itemCount;
 
         if (item != null)
         {
             _crafticon.sprite = item.icon;
             _crafticon.enabled = true;
+
+            countText.text = count > 1 ? count.ToString() : "";
         }
         else
             _crafticon.enabled = false;
@@ -53,5 +59,16 @@ public class CraftSlotUI : MonoBehaviour, IDropHandler
     public void SetSelect(bool value)
     {
         selectionFrame.color = value ? Color.green : Color.white;
+    }
+
+    public void ConsumeItem(int amount)
+    {
+        count -= amount;
+        if(count <= 0)
+        {
+            ClearItem();
+
+            count = 0;
+        }
     }
 }
