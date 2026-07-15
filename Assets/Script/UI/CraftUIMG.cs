@@ -20,7 +20,10 @@ public class CraftUIMG : MonoBehaviour
     {
         for(int i = 0; i < _craftSlots.Length; i++)
         {
-            _craftSlots[i].SetSelect(i == currentCraftSlot);
+            if (_craftSlots[i].gameObject.activeSelf)
+                _craftSlots[i].SetSelect(i == currentCraftSlot);
+            else
+                _craftSlots[i].SetSelect(false);
         }
     }
 

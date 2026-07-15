@@ -17,6 +17,11 @@ public class CraftSlotUI : MonoBehaviour, IDropHandler
 
     public bool isSelected;
 
+    public void Start()
+    {
+        countText.text = "";
+    }
+
     public void OnDrop(PointerEventData eventData)
     {
         InventorySlotUI inventorySlot = eventData.pointerDrag.GetComponent<InventorySlotUI>();
@@ -47,13 +52,18 @@ public class CraftSlotUI : MonoBehaviour, IDropHandler
             countText.text = count > 1 ? count.ToString() : "";
         }
         else
+        {
             _crafticon.enabled = false;
+            countText.text = "";
+        }
     }
 
     public void ClearItem()
     {
         currentItem = null;
+        count = 0;
         _crafticon.enabled = false;
+        countText.text = "";
     }
 
     public void SetSelect(bool value)
@@ -69,6 +79,9 @@ public class CraftSlotUI : MonoBehaviour, IDropHandler
             ClearItem();
 
             count = 0;
+            return;
         }
+
+        countText.text = count > 1 ? count.ToString() : "";
     }
 }

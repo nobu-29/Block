@@ -143,6 +143,7 @@ public class InventoryUIMG : MonoBehaviour
                 if(input.x < -0.5f)
                 {
                     currentArea = UIArea.CraftGrid;
+                    _craftUI.currentCraftSlot = 8;
                     RefreshSelection();
                 }
                 break;
@@ -153,8 +154,41 @@ public class InventoryUIMG : MonoBehaviour
         
     }
 
+    //↓インベントリもしくはホットバーでの移動
     void MoveInventoryCursor(Vector2 input)
     {
+        //Hotbar選択中
+        if (selectingHotbar)
+        {
+
+            if (input.x > 0.5f)
+                currentSlot++;
+
+            else if (input.x < -0.5f)
+                currentSlot--;
+
+            else if (input.y > 0.5f)
+            {
+                // Inventoryへ戻る
+                selectingHotbar = false;
+
+                currentSlot = Mathf.Clamp(currentSlot + _inventoryslots.Length - 7, 0, _inventoryslots.Length -1);
+
+                RefreshSelection();
+                return;
+            }
+
+            currentSlot = Mathf.Clamp(
+                currentSlot,
+                0,
+                _hotbarslots.slots.Length - 1);
+
+            UpdateSelection();
+            return;
+
+        }
+
+
         if (input.x > 0.5f)
             currentSlot++;
         else if (input.x < -0.5f)
@@ -168,16 +202,24 @@ public class InventoryUIMG : MonoBehaviour
 
             if (currentSlot < 0)
             {
-                selectingHotbar = true;
-                currentSlot = Mathf.Abs(currentSlot);
+                currentArea = UIArea.CraftGrid;
+                _craftUI.currentCraftSlot = Mathf.Clamp(currentSlot + 7, 6, 8);
+                RefreshSelection();
+                return;
             }
         }
         else if (input.y < -0.5f)
         {
-            if (selectingHotbar)
-                selectingHotbar = false;
-            else
-                currentSlot += 7;
+            currentSlot += 7;
+
+            if (currentSlot >= _inventoryslots.Length)
+            {
+                selectingHotbar = true;
+
+                currentSlot = Mathf.Clamp(currentSlot - _inventoryslots.Length, 0, _hotbarslots.slots.Length - 1);
+                RefreshSelection();
+                return;
+            }   
         }
         else
             return;
@@ -190,14 +232,24 @@ public class InventoryUIMG : MonoBehaviour
             currentSlot = Mathf.Clamp(currentSlot, 0, _inventoryslots.Length - 1);
 
         UpdateSelection();
+        RefreshSelection();
     }
 
-    void
-    MoveCraftCursor(Vector2 input)
+    //↓クラフト画面での移動
+    void MoveCraftCursor(Vector2 input)
     {
         if (input.x > 0.5f)
-            _craftUI.currentCraftSlot++;
+        {
+            if(_craftUI.currentCraftSlot == 8)
+            {
+                currentArea = UIArea.CraftResult;
 
+                RefreshSelection();
+                return;
+            }
+
+            _craftUI.currentCraftSlot++;
+        }
         else if (input.x < -0.5f)
             _craftUI.currentCraftSlot--;
 
@@ -205,16 +257,19 @@ public class InventoryUIMG : MonoBehaviour
             _craftUI.currentCraftSlot -= 3;
 
         else if (input.y < -0.5f)
+        {
+            if (_craftUI.currentCraftSlot >= 6)
+            {
+                currentArea = UIArea.Inventory;
+                currentSlot = Mathf.Clamp(_craftUI.currentCraftSlot + 3, 0, 2);
+                RefreshSelection();
+                return;
+            }
+
             _craftUI.currentCraftSlot += 3;
+        }
 
         _craftUI.currentCraftSlot = Mathf.Clamp(_craftUI.currentCraftSlot,0,8);
-
-        if(input.x > 0.5f && _craftUI.currentCraftSlot == 8)
-        {
-            currentArea = UIArea.CraftResult;
-            RefreshSelection();
-            return;
-        }
 
         _craftUI.UpdataCraftSelection();
     }
@@ -259,7 +314,52 @@ public class InventoryUIMG : MonoBehaviour
 
     public void Submit(InputAction.CallbackContext context)
     {
-        if(currentArea == UIArea.CraftResult)
+        if(currentArea == UIArea.CraftGrid)
+        {
+            if (heldSlot == -1) return;
+
+            int inventoryIndex = heldFromHotbar ? heldSlot : heldSlot + _inventory.hotbarSize;
+            if (inventoryIndex >= _inventory.myinventory.Length) return;
+
+            InventorySlot invSlot = _inventory.myinventory[inventoryIndex];
+
+            CraftSlotUI craftSlot = _craftUI._craftSlots[_craftUI.currentCraftSlot];
+
+            if(craftSlot.currentItem == null)
+            {
+                craftSlot.SetItem(invSlot.item, 1);
+                invSlot.count--;
+                if(invSlot.count <= 0)
+                {
+                    invSlot.item = null;
+                    invSlot.count = 0;
+                }
+            }
+            else if(craftSlot.currentItem == invSlot.item)
+            {
+                craftSlot.count++;
+
+                craftSlot.countText.text = craftSlot.count.ToString();
+
+                invSlot.count--;
+                if(invSlot.count <= 0)
+                {
+                    invSlot.item = null;
+                    invSlot.count = 0;
+                }
+            }
+
+            UpdateUI();
+            _hotbarslots.UpdateUI();
+            _craftUI.UpdateRecipe();
+
+            heldSlot = -1;
+            heldFromHotbar = false;
+
+            RefreshSelection();
+            return;
+        }
+        else if(currentArea == UIArea.CraftResult)
         {
             _craftUI.Craft();
             return;
