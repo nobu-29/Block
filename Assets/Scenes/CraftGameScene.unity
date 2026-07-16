@@ -590,6 +590,7 @@ MonoBehaviour:
   resultName: {fileID: 1828675010}
   currentCraftSlot: 0
   _inventory: {fileID: 11400000, guid: bff980be3b3c1984ea4468be4a8af91d, type: 2}
+  _inventoryUI: {fileID: 271098823}
 --- !u!1 &45234701
 GameObject:
   m_ObjectHideFlags: 0

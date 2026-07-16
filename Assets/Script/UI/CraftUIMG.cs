@@ -16,6 +16,8 @@ public class CraftUIMG : MonoBehaviour
 
     public Inventory _inventory;
 
+    public InventoryUIMG _inventoryUI;
+
     public void UpdataCraftSelection()
     {
         for(int i = 0; i < _craftSlots.Length; i++)
@@ -74,6 +76,8 @@ public class CraftUIMG : MonoBehaviour
 
         UpdateRecipe();
 
+        _inventoryUI.UpdateUI();
+        _inventoryUI._hotbarslots.UpdateUI();
     }
 
     public void CraftAll()
