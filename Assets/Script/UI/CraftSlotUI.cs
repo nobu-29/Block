@@ -77,8 +77,6 @@ public class CraftSlotUI : MonoBehaviour, IDropHandler
         if(count <= 0)
         {
             ClearItem();
-
-            count = 0;
             return;
         }
 

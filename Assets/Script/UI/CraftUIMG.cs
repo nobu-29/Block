@@ -58,8 +58,7 @@ public class CraftUIMG : MonoBehaviour
 
         for (int i = 0; i < 9; i++)
         {
-            if (_craftSlots[i].currentItem != null)
-                _craftSlots[i].ConsumeItem(1);
+            currentGrid[i] = _craftSlots[i].currentItem;
         }
 
         CraftingRecipe recipe = _craftSystem.CheckRecipe(currentGrid);
@@ -68,7 +67,10 @@ public class CraftUIMG : MonoBehaviour
         _inventory.itemGet(recipe.resultItem);
 
         for (int i = 0; i < 9; i++)
-            _craftSlots[i].ClearItem();
+        {
+            if (_craftSlots[i].currentItem != null)
+                _craftSlots[i].ConsumeItem(1);
+        }
 
         UpdateRecipe();
 
