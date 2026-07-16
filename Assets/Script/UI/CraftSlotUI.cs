@@ -84,4 +84,9 @@ public class CraftSlotUI : MonoBehaviour, IDropHandler
 
         countText.text = count > 1 ? count.ToString() : "";
     }
+
+    public bool HasItem()
+    {
+        return currentItem != null;
+    }
 }

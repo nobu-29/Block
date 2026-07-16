@@ -314,59 +314,107 @@ public class InventoryUIMG : MonoBehaviour
 
     public void Submit(InputAction.CallbackContext context)
     {
+        if (!context.performed) return;
+
         if(currentArea == UIArea.CraftGrid)
         {
-            if (heldSlot == -1) return;
-
-            int inventoryIndex = heldFromHotbar ? heldSlot : heldSlot + _inventory.hotbarSize;
-            if (inventoryIndex >= _inventory.myinventory.Length) return;
-
-            InventorySlot invSlot = _inventory.myinventory[inventoryIndex];
-
             CraftSlotUI craftSlot = _craftUI._craftSlots[_craftUI.currentCraftSlot];
 
-            if(craftSlot.currentItem == null)
+            //　Craft → Inventory
+            if(heldSlot == -1 && craftSlot.currentItem != null)
             {
-                craftSlot.SetItem(invSlot.item, 1);
-                invSlot.count--;
-                if(invSlot.count <= 0)
-                {
-                    invSlot.item = null;
-                    invSlot.count = 0;
-                }
+                int emptySlot = _inventory.GetEmptySlot();
+
+                if (emptySlot == -1) return;
+
+                _inventory.myinventory[emptySlot].item = craftSlot.currentItem;
+                _inventory.myinventory[emptySlot].count = craftSlot.count;
+
+                craftSlot.ClearItem();
+
+                UpdateUI();
+                _hotbarslots.UpdateUI();
+
+                _craftUI.UpdateRecipe();
+
+                RefreshSelection();
+
+                heldSlot = -1;
+                heldFromHotbar = false;
+
+                return;
             }
-            else if(craftSlot.currentItem == invSlot.item)
+
+            // Inventory → Craft
+            if(heldSlot != -1)
             {
-                craftSlot.count++;
+                int _inventoryIndex = heldFromHotbar ? heldSlot : heldSlot + _inventory.hotbarSize;
 
-                craftSlot.countText.text = craftSlot.count.ToString();
+                if (_inventoryIndex >= _inventory.myinventory.Length) return;
 
-                invSlot.count--;
-                if(invSlot.count <= 0)
+                InventorySlot invSlot = _inventory.myinventory[_inventoryIndex];
+
+                if (invSlot.item == null)
+                    return;
+
+                // 空スロット
+                if (craftSlot.currentItem == null)
                 {
-                    invSlot.item = null;
-                    invSlot.count = 0;
+                    craftSlot.SetItem(
+                        invSlot.item,
+                        1);
+
+                    invSlot.count--;
+
+                    if (invSlot.count <= 0)
+                    {
+                        invSlot.item = null;
+                        invSlot.count = 0;
+                    }
                 }
+                // 同アイテムなら追加
+                else if (craftSlot.currentItem ==
+                         invSlot.item)
+                {
+                    craftSlot.count++;
+
+                    craftSlot.countText.text =
+                        craftSlot.count > 1
+                        ? craftSlot.count.ToString()
+                        : "";
+
+                    invSlot.count--;
+
+                    if (invSlot.count <= 0)
+                    {
+                        invSlot.item = null;
+                        invSlot.count = 0;
+                    }
+                }
+
+                UpdateUI();
+                _hotbarslots.UpdateUI();
+
+                _craftUI.UpdateRecipe();
+
+                heldSlot = -1;
+                heldFromHotbar = false;
+
+                RefreshSelection();
+
+                return;
+
             }
-
-            UpdateUI();
-            _hotbarslots.UpdateUI();
-            _craftUI.UpdateRecipe();
-
-            heldSlot = -1;
-            heldFromHotbar = false;
-
-            RefreshSelection();
-            return;
         }
+
+        //CraftResult
         else if(currentArea == UIArea.CraftResult)
         {
             _craftUI.Craft();
             return;
         }
 
-        if (!context.performed) return;
-
+        //Inventory / Hotbar
         if (heldSlot == -1)
         {
             heldSlot = currentSlot;

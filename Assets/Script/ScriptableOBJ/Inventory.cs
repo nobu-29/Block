@@ -88,11 +88,6 @@ public class Inventory : ScriptableObject
         myinventory[b] = temp;
     }
 
-    /*    public void AnatherInventory()
-        {
-            List<ItemObject> anatherinventory = myinventory;
-        }*/
-
     private void OnEnable()
     {
         for(int i = 0; i < myinventory.Length; i++)
@@ -100,6 +95,16 @@ public class Inventory : ScriptableObject
             if (myinventory[i] == null)
                 myinventory[i] = new InventorySlot();
         }
+    }
+
+    public int GetEmptySlot()
+    {
+        for (int i = 0; i < myinventory.Length; i++)
+        {
+            if (myinventory[i].item == null)
+                return i;
+        }
+        return -1;
     }
 }
 
