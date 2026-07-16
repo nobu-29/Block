@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -110,6 +111,13 @@ public class InventoryUIMG : MonoBehaviour
         if (from < 0 || from >= _inventory.myinventory.Length) return;
 
         if ( to >= _inventory.myinventory.Length) return;
+
+        if(_inventory.MergeStack(from, to))
+        {
+            UpdateUI();
+            _hotbarslots.UpdateUI();
+            return;
+        }
 
         var temp = _inventory.myinventory[from];
 
@@ -489,7 +497,6 @@ public class InventoryUIMG : MonoBehaviour
 
         _craftUI.resultSlot.SetSelect(currentArea == UIArea.CraftResult);
     }
-
 }
 
 [System.Serializable]

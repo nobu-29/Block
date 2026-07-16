@@ -106,6 +106,37 @@ public class Inventory : ScriptableObject
         }
         return -1;
     }
+
+    //↓インベントリ内でのアイテム合体
+    public bool MergeStack(int from, int to)
+    {
+        if (from < 0 || from >= myinventory.Length) return false;
+
+        if(to <  0 || to >= myinventory.Length) return false;
+
+        InventorySlot fromSlot = myinventory[from];
+        InventorySlot toSlot = myinventory[to];
+
+        if(fromSlot.item == null || toSlot.item == null) return false;
+
+        if(toSlot.count >= maxStack) return false;
+
+        int moveCount = Mathf.Min(fromSlot.count, maxStack - toSlot.count);
+
+        toSlot.count += moveCount;
+
+        fromSlot.count -= moveCount;
+
+        if(fromSlot.count <= 0)
+        {
+            fromSlot.item = null;
+            fromSlot.count = 0;
+        }
+
+        return true;
+    }
+
+
 }
 
 [System.Serializable]
