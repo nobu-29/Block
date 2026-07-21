@@ -227,6 +227,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 203108538}
+  selectionFrame: {fileID: 1902278799}
   count: 0
   countText: {fileID: 934378558}
   currentItem: {fileID: 0}
@@ -1845,6 +1846,7 @@ MonoBehaviour:
     selecctionFrame: {fileID: 2094711886}
   _hotbarslots: {fileID: 718096206}
   _craftUI: {fileID: 36908258}
+  _furnaceUI: {fileID: 1595276471}
   dragIndex: -1
   dragFromHotbar: 0
   selectingHotbar: 0
@@ -3155,6 +3157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 1749356371}
+  selectionFrame: {fileID: 176272583}
   count: 0
   countText: {fileID: 1032724191}
   currentItem: {fileID: 0}
@@ -4765,7 +4768,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60f1520eb51b8a84f890f81abb9a0839, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  recipes: []
+  recipes:
+  - {fileID: 11400000, guid: 6d14ad87b1c2652429b1349bf7c33e9d, type: 2}
 --- !u!1 &657237491
 GameObject:
   m_ObjectHideFlags: 0
@@ -7716,7 +7720,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &934378559
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -8924,7 +8928,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &1032724192
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12088,6 +12092,7 @@ MonoBehaviour:
   furnaceSystem: {fileID: 639944132}
   inputSlot: {fileID: 489068509}
   outputSlot: {fileID: 23251548}
+  currentSlot: 0
 --- !u!114 &1595276472
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13894,7 +13899,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: 
 --- !u!222 &1828675011
 CanvasRenderer:
   m_ObjectHideFlags: 0
