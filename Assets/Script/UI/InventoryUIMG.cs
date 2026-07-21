@@ -1,4 +1,4 @@
-using Unity.VisualScripting;
+//using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -232,7 +232,7 @@ public class InventoryUIMG : MonoBehaviour
         else
             return;
 
-        nextMoveTime = Time.time + moveDelay;
+        //nextMoveTime = Time.time + moveDelay;
 
         if (selectingHotbar)
             currentSlot = Mathf.Clamp(currentSlot, 0, _hotbarslots.slots.Length - 1);
@@ -340,8 +340,8 @@ public class InventoryUIMG : MonoBehaviour
 
                 craftSlot.ClearItem();
 
-                UpdateUI();
-                _hotbarslots.UpdateUI();
+                //UpdateUI();
+                //_hotbarslots.UpdateUI();
 
                 _craftUI.UpdateRecipe();
 
@@ -496,6 +496,18 @@ public class InventoryUIMG : MonoBehaviour
         _craftUI.UpdataCraftSelection();
 
         _craftUI.resultSlot.SetSelect(currentArea == UIArea.CraftResult);
+    }
+
+    private void OnEnable()
+    {
+        _inventory.OnInventoryChanged += UpdateUI;
+        _inventory.OnInventoryChanged += _hotbarslots.UpdateUI;
+    }
+
+    private void OnDisable()
+    {
+        _inventory.OnInventoryChanged -= UpdateUI;
+        _inventory.OnInventoryChanged -= _hotbarslots.UpdateUI;
     }
 }
 

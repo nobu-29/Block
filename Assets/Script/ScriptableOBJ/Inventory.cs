@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ public class Inventory : ScriptableObject
     public int maxStack = 100;
 
     public int hotbarSize = 7;
+
+    public Action OnInventoryChanged;
 
     public void itemGet(ItemObject item)
     {
@@ -20,6 +23,7 @@ public class Inventory : ScriptableObject
             if(slot.item == item && slot.count < maxStack)
             {
                 slot.count++;
+                OnInventoryChanged?.Invoke();
                 return;
             }
         }
@@ -30,10 +34,10 @@ public class Inventory : ScriptableObject
             {
                 myinventory[i].item = item;
                 myinventory[i].count = 1;
+                OnInventoryChanged?.Invoke();
                 return;
             }
         }
-
     }
 
     public void ItemRemove(ItemObject item)
@@ -48,6 +52,7 @@ public class Inventory : ScriptableObject
                     slot.item = null;
                     slot.count = 0;
                 }
+                OnInventoryChanged?.Invoke();
                 return;
             }
         }
@@ -76,7 +81,7 @@ public class Inventory : ScriptableObject
             myinventory[i].item = null;
             myinventory[i].count = 0;
         }
-
+        OnInventoryChanged?.Invoke();
     }
 
     public void SwapSlot(int a,int b)
@@ -86,6 +91,8 @@ public class Inventory : ScriptableObject
         myinventory[a] = myinventory[b];
 
         myinventory[b] = temp;
+
+        OnInventoryChanged?.Invoke();
     }
 
     private void OnEnable()
@@ -119,7 +126,9 @@ public class Inventory : ScriptableObject
 
         if(fromSlot.item == null || toSlot.item == null) return false;
 
-        if(toSlot.count >= maxStack) return false;
+        if (fromSlot.item != toSlot.item) return false;
+
+        if (toSlot.count >= maxStack) return false;
 
         int moveCount = Mathf.Min(fromSlot.count, maxStack - toSlot.count);
 
@@ -132,7 +141,7 @@ public class Inventory : ScriptableObject
             fromSlot.item = null;
             fromSlot.count = 0;
         }
-
+        OnInventoryChanged?.Invoke();
         return true;
     }
 
