@@ -9,7 +9,10 @@ public class InventoryUIMG : MonoBehaviour
     {
         Inventory,
         CraftGrid,
-        CraftResult
+        CraftResult,
+
+        FurnaceInput,
+        FurnaceResult
     }
 
     public UIArea currentArea = UIArea.Inventory;
@@ -27,6 +30,7 @@ public class InventoryUIMG : MonoBehaviour
     public InventoryUISlot[] _inventoryslots;
     public HotbarMG _hotbarslots;
     public CraftUIMG _craftUI;
+    public FurnaceUI _furnaceUI;
 
     public int dragIndex = -1;
 
@@ -155,6 +159,10 @@ public class InventoryUIMG : MonoBehaviour
                     RefreshSelection();
                 }
                 break;
+            case UIArea.FurnaceInput:
+            case UIArea.FurnaceResult:
+                MoveFurnaceCursor(input);
+                break;
         }
 
         nextMoveTime = Time.time + moveDelay;
@@ -210,8 +218,18 @@ public class InventoryUIMG : MonoBehaviour
 
             if (currentSlot < 0)
             {
-                currentArea = UIArea.CraftGrid;
-                _craftUI.currentCraftSlot = Mathf.Clamp(currentSlot + 7, 6, 8);
+                if (TabArea == UITab.Furnace)
+                {
+                    currentArea = UIArea.FurnaceInput;
+                    _furnaceUI.currentSlot = 0;
+                    _furnaceUI.UpdateSelection();
+                }
+                else
+                {
+                    currentArea = UIArea.CraftGrid;
+                    _craftUI.currentCraftSlot = Mathf.Clamp(currentSlot + 7, 6, 8);
+                    _craftUI.UpdataCraftSelection();
+                }
                 RefreshSelection();
                 return;
             }
@@ -324,12 +342,12 @@ public class InventoryUIMG : MonoBehaviour
     {
         if (!context.performed) return;
 
-        if(currentArea == UIArea.CraftGrid)
+        if (currentArea == UIArea.CraftGrid)
         {
             CraftSlotUI craftSlot = _craftUI._craftSlots[_craftUI.currentCraftSlot];
 
             //@Craft ¨ Inventory
-            if(heldSlot == -1 && craftSlot.currentItem != null)
+            if (heldSlot == -1 && craftSlot.currentItem != null)
             {
                 int emptySlot = _inventory.GetEmptySlot();
 
@@ -340,8 +358,8 @@ public class InventoryUIMG : MonoBehaviour
 
                 craftSlot.ClearItem();
 
-                //UpdateUI();
-                //_hotbarslots.UpdateUI();
+                UpdateUI();
+                _hotbarslots.UpdateUI();
 
                 _craftUI.UpdateRecipe();
 
@@ -354,7 +372,7 @@ public class InventoryUIMG : MonoBehaviour
             }
 
             // Inventory ¨ Craft
-            if(heldSlot != -1)
+            if (heldSlot != -1)
             {
                 int _inventoryIndex = heldFromHotbar ? heldSlot : heldSlot + _inventory.hotbarSize;
 
@@ -416,11 +434,103 @@ public class InventoryUIMG : MonoBehaviour
         }
 
         //CraftResult
-        else if(currentArea == UIArea.CraftResult)
+        else if (currentArea == UIArea.CraftResult)
         {
             _craftUI.Craft();
             return;
         }
+
+        //Furnace
+        else if (currentArea == UIArea.FurnaceInput)
+        {
+            FurnaceSlotUI furnaceSlot = _furnaceUI.inputSlot;
+            //Furnace ¨ Inventory
+            if (heldSlot == -1 && furnaceSlot.currentItem != null)
+            {
+                int emptySlot = _inventory.GetEmptySlot();
+                if (emptySlot == -1) return;
+                _inventory.myinventory[emptySlot].item = furnaceSlot.currentItem;
+                _inventory.myinventory[emptySlot].count = furnaceSlot.count;
+
+                furnaceSlot.ClearItem();
+                _furnaceUI.UpdateSelection();
+                return;
+            }
+
+            // Inventory ¨ Furnace
+
+            if (heldSlot != -1)
+            {
+                int inventoryIndex =
+                    heldFromHotbar
+                    ? heldSlot
+                    : heldSlot + _inventory.hotbarSize;
+
+                InventorySlot invSlot =
+                    _inventory.myinventory[inventoryIndex];
+
+                if (invSlot.item == null)
+                    return;
+
+                if (furnaceSlot.currentItem == null)
+                {
+                    furnaceSlot.SetItem(
+                        invSlot.item,
+                        1);
+
+                    invSlot.count--;
+
+                    if (invSlot.count <= 0)
+                    {
+                        invSlot.item = null;
+                        invSlot.count = 0;
+                    }
+                }
+                else if (
+                    furnaceSlot.currentItem ==
+                    invSlot.item)
+                {
+                    furnaceSlot.count++;
+
+                    furnaceSlot.countText.text =
+                        furnaceSlot.count.ToString();
+
+                    invSlot.count--;
+
+                    if (invSlot.count <= 0)
+                    {
+                        invSlot.item = null;
+                        invSlot.count = 0;
+                    }
+                }
+
+                heldSlot = -1;
+                heldFromHotbar = false;
+
+                _inventory.OnInventoryChanged?.Invoke();
+
+                return;
+
+            }
+        }
+
+        //FurnaceResult
+        else if (currentArea == UIArea.FurnaceResult)
+        {
+            FurnaceSlotUI resultSlot =
+                _furnaceUI.outputSlot;
+
+            if (resultSlot.currentItem == null)
+                return;
+
+            _inventory.itemGet(
+                resultSlot.currentItem);
+
+            resultSlot.ConsumeItem(1);
+
+            return;
+        }
+
 
         //Inventory / Hotbar
         if (heldSlot == -1)
@@ -443,6 +553,7 @@ public class InventoryUIMG : MonoBehaviour
         UpdateSelection();
         _hotbarslots.UpdateUI();
     }
+
 
 
     public void SwitchArea(
@@ -481,10 +592,16 @@ public class InventoryUIMG : MonoBehaviour
             case UITab.Craft:
                 TabArea = UITab.Furnace;
                 _furnacePanel.SetActive(true);
+                currentArea = UIArea.FurnaceInput;
+                _furnaceUI.currentSlot = 0;
+                _furnaceUI.UpdateSelection();
                 break;
             case UITab.Furnace:
                 TabArea = UITab.Craft;
                 _furnacePanel.SetActive(false);
+                currentArea = UIArea.CraftGrid;
+                _craftUI.currentCraftSlot = 0;
+                _craftUI.UpdataCraftSelection();
                 break;
         }
     }
@@ -496,6 +613,29 @@ public class InventoryUIMG : MonoBehaviour
         _craftUI.UpdataCraftSelection();
 
         _craftUI.resultSlot.SetSelect(currentArea == UIArea.CraftResult);
+    }
+
+    void MoveFurnaceCursor(Vector2 input)
+    {
+        if(input.x > 0.5f)
+        {
+            _furnaceUI.currentSlot = 1;
+            currentArea = UIArea.FurnaceResult;
+        }
+        else if(input.x < -0.5f)
+        {
+            _furnaceUI.currentSlot = 0;
+            currentArea = UIArea.FurnaceInput;
+        }
+        else if(input.y < -0.5)
+        {
+            currentArea = UIArea.Inventory;
+            currentSlot = 0;
+            RefreshSelection();
+            return;
+        }
+
+        _furnaceUI.UpdateSelection();
     }
 
     private void OnEnable()

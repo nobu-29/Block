@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class FurnaceSlotUI : MonoBehaviour
 {
     public Image icon;
+    public Image selectionFrame;
     public int count;
     public Text countText;
     public ItemObject currentItem;
@@ -54,5 +55,10 @@ public class FurnaceSlotUI : MonoBehaviour
 
         if (countText != null)
             countText.text = count > 1 ? count.ToString() : "";
+    }
+
+    public void SetSelect(bool value)
+    {
+        selectionFrame.color = value ? Color.green : Color.white;
     }
 }
