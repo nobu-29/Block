@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b027b3d4470f7d54bb59b3156c98920e, type: 3}
   m_Name: SandStone
   m_EditorClassIdentifier: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8a74f192d41ee7c4884d6f2db844578f, type: 3}
   ItemName: "\u7802\u5CA9"
-  blockID: 7
-  blockPrefab: {fileID: 0}
+  blockID: 15
+  blockPrefab: {fileID: 5271034238063244034, guid: 401d8dc74243cff4c945b764885a8b7f, type: 3}
   Itemdel: "\u7802\u3068\u77F3\u306E\u5408\u4F53\u30D6\u30ED\u30C3\u30AF"
