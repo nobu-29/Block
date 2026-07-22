@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FurnaceUI : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class FurnaceUI : MonoBehaviour
     public FurnaceSlotUI outputSlot;
 
     public int currentSlot = 0;
+
+    public Image _progressBar;
 
     private float timer;
 
@@ -29,17 +32,19 @@ public class FurnaceUI : MonoBehaviour
         if (timer >= recipe.smeltTime)
         {
             timer = 0;
+            _progressBar.fillAmount = 0;
 
             if(outputSlot.currentItem == null)
                 outputSlot.SetItem(recipe.outputItem,1);
             else if(outputSlot.currentItem == recipe.outputItem)
             {
                 outputSlot.count++;
-                outputSlot.countText.text = outputSlot.count.ToString();
+                outputSlot.countText.text = outputSlot.count > 1 ? outputSlot.count.ToString() : "";
             }
 
             inputSlot.ConsumeItem(1);
         }
+        _progressBar.fillAmount = timer / recipe.smeltTime;
     }
 
     public void UpdateSelection()

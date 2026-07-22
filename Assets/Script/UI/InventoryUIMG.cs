@@ -76,6 +76,7 @@ public class InventoryUIMG : MonoBehaviour
         }
         else
         {
+            ReturnCraftItems();
             _playerInput.SwitchCurrentActionMap("Player");
         }
     }
@@ -474,9 +475,7 @@ public class InventoryUIMG : MonoBehaviour
 
                 if (furnaceSlot.currentItem == null)
                 {
-                    furnaceSlot.SetItem(
-                        invSlot.item,
-                        1);
+                    furnaceSlot.SetItem(invSlot.item,1);
 
                     invSlot.count--;
 
@@ -583,6 +582,39 @@ public class InventoryUIMG : MonoBehaviour
         RefreshSelection();
     }
 
+    public void QuickMove(
+        InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+            return;
+
+        int inventoryIndex =
+            selectingHotbar
+            ? currentSlot
+            : currentSlot +
+              _inventory.hotbarSize;
+
+        InventorySlot slot =
+            _inventory.myinventory[
+                inventoryIndex];
+
+        if (slot.item == null)
+            return;
+
+        if (TabArea == UITab.Furnace)
+        {
+            _furnaceUI.inputSlot.SetItem(
+                slot.item,
+                slot.count);
+
+            slot.item = null;
+            slot.count = 0;
+        }
+
+        _inventory.OnInventoryChanged?.Invoke();
+    }
+
+
     public void SwitchTabArea(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
@@ -613,6 +645,19 @@ public class InventoryUIMG : MonoBehaviour
         _craftUI.UpdataCraftSelection();
 
         _craftUI.resultSlot.SetSelect(currentArea == UIArea.CraftResult);
+    }
+
+    void ReturnCraftItems()
+    {
+        for(int i = 0; i < _craftUI._craftSlots.Length; i++)
+        {
+            CraftSlotUI slot = _craftUI._craftSlots[i];
+            if (slot.currentItem == null) continue;
+
+            _inventory.itemGet(slot.currentItem);
+            slot.ConsumeItem(slot.count);
+        }
+        _craftUI.UpdateRecipe();
     }
 
     void MoveFurnaceCursor(Vector2 input)

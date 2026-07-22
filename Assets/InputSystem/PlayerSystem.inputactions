@@ -450,7 +450,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "UICraft",
+                    "name": "UIQuickMove",
                     "type": "Button",
                     "id": "387af14a-0d3e-48dd-98af-5af3a6b23adf",
                     "expectedControlType": "",
@@ -639,7 +639,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "UICraft",
+                    "action": "UIQuickMove",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

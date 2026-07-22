@@ -15,4 +15,9 @@ public class FurnaceSystem : MonoBehaviour
 
         return null;
     }
+
+    public bool Cansmelt(ItemObject item)
+    {
+        return GetRecipe(item) != null;
+    }
 }
