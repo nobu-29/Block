@@ -11,6 +11,7 @@ public class CraftUIMG : MonoBehaviour
     public ItemObject resultItem;
     public CraftResultSlotUI resultSlot;
     public Text resultName;
+    public Text resultCount;
 
     public int currentCraftSlot;
 
@@ -42,6 +43,7 @@ public class CraftUIMG : MonoBehaviour
         {
             Debug.Log("ì¬‰Â”\:" + recipe.resultItem.ItemName);
             resultName.text = recipe.resultItem.ItemName;
+            resultCount.text = recipe.resultAmount > 1 ? "x"+ recipe.resultAmount.ToString() : "";
 
             resultSlot.SetItem(recipe.resultItem);
         }
@@ -49,6 +51,7 @@ public class CraftUIMG : MonoBehaviour
         {
             Debug.Log("ƒŒƒVƒs‚È‚µ");
             resultName.text = "";
+            resultCount.text = "";
 
             resultSlot.ClearItem();
         }
@@ -66,7 +69,7 @@ public class CraftUIMG : MonoBehaviour
         CraftingRecipe recipe = _craftSystem.CheckRecipe(currentGrid);
         if (recipe == null) return;
 
-        _inventory.itemGet(recipe.resultItem);
+        _inventory.AddItem(recipe.resultItem, recipe.resultAmount);
 
         for (int i = 0; i < 9; i++)
         {
