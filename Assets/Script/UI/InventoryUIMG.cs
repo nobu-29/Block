@@ -466,6 +466,12 @@ public class InventoryUIMG : MonoBehaviour
                 if (invSlot.item == null)
                     return;
 
+                if (!_furnaceUI.furnaceSystem.Cansmelt(invSlot.item))
+                {
+                    Debug.Log("êªòBÇ≈Ç´Ç»Ç¢ÉAÉCÉeÉÄ");
+                    return;
+                }
+
                 if (furnaceSlot.currentItem == null)
                 {
                     furnaceSlot.SetItem(invSlot.item,1);
