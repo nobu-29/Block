@@ -398,13 +398,15 @@ public class ChunkMeshWorld : MonoBehaviour
         else if (id == 5)
             return GetUV(3, 2);
 
-        /*        // …
-                else if (id == 8 || id == 800 || id == 801 || id == 802 || id == 803 || id == 804 || id == 805 || id == 806)
-                    return GetUV(1, 3);*/
+        // –Ø‚Ì”Â
+        else if (id == 6)
+            return GetUV(1, 4);
+
+        // … id 8,800`806
 
         // á
         else if (id == 9)
-            return GetUV(2, 3);
+            return GetUV(0, 4);
 
         //»iƒPƒC‘f‚ÌŒ³‘f”Ô†14j
         else if (id == 14)
