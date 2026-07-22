@@ -18,14 +18,34 @@ public class FurnaceUI : MonoBehaviour
     void Update()
     {
         if (inputSlot.currentItem == null)
+        {
+            timer = 0;
+            _progressBar.fillAmount = 0;
             return;
+        }
 
-        FurnaceRecipe recipe =
-            furnaceSystem.GetRecipe(
-                inputSlot.currentItem);
+        FurnaceRecipe recipe = furnaceSystem.GetRecipe(inputSlot.currentItem);
 
         if (recipe == null)
+        {
+            timer = 0;
+            _progressBar.fillAmount = 0;
             return;
+        }
+
+        if (outputSlot.currentItem != null && outputSlot.currentItem != recipe.outputItem)
+        {
+            timer = 0;
+            _progressBar.fillAmount = 0;
+            return;
+        }
+
+        if (outputSlot.currentItem == recipe.outputItem && outputSlot.count >= 100) 
+        {
+            timer = 0;
+            _progressBar.fillAmount = 0;
+            return; 
+        }
 
         timer += Time.deltaTime;
 
@@ -36,10 +56,10 @@ public class FurnaceUI : MonoBehaviour
 
             if(outputSlot.currentItem == null)
                 outputSlot.SetItem(recipe.outputItem,1);
-            else if(outputSlot.currentItem == recipe.outputItem)
+            else if(outputSlot.currentItem == recipe.outputItem && outputSlot.count < 100)
             {
                 outputSlot.count++;
-                outputSlot.countText.text = outputSlot.count > 1 ? outputSlot.count.ToString() : "";
+                outputSlot.UpdateCountText();
             }
 
             inputSlot.ConsumeItem(1);

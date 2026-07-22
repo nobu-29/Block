@@ -61,4 +61,9 @@ public class FurnaceSlotUI : MonoBehaviour
     {
         selectionFrame.color = value ? Color.green : Color.white;
     }
+
+    public void UpdateCountText()
+    {
+        countText.text = count > 1 ? count.ToString() : "";
+    }
 }

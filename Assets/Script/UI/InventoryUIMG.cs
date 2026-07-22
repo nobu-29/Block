@@ -515,9 +515,9 @@ public class InventoryUIMG : MonoBehaviour
             if (resultSlot.currentItem == null)
                 return;
 
-            _inventory.AddItem(resultSlot.currentItem, 1);
+            _inventory.AddItem(resultSlot.currentItem, resultSlot.count);
 
-            resultSlot.ConsumeItem(1);
+            resultSlot.ClearItem();
 
             return;
         }
@@ -580,6 +580,22 @@ public class InventoryUIMG : MonoBehaviour
         if (!context.performed)
             return;
 
+        if (currentArea == UIArea.FurnaceResult)
+        {
+
+            FurnaceSlotUI resultSlot = _furnaceUI.outputSlot;
+
+            if (resultSlot.currentItem == null)
+                return;
+
+            _inventory.AddItem(resultSlot.currentItem, resultSlot.count);
+
+            resultSlot.ClearItem();
+
+            return;
+
+        }
+
         int inventoryIndex =
             selectingHotbar
             ? currentSlot
@@ -606,7 +622,6 @@ public class InventoryUIMG : MonoBehaviour
                 _furnaceUI.inputSlot.countText.text = _furnaceUI.inputSlot.count.ToString();
             }
         }
-
         _inventory.OnInventoryChanged?.Invoke();
     }
 
