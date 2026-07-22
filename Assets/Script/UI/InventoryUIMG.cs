@@ -350,12 +350,7 @@ public class InventoryUIMG : MonoBehaviour
             //Å@Craft Å® Inventory
             if (heldSlot == -1 && craftSlot.currentItem != null)
             {
-                int emptySlot = _inventory.GetEmptySlot();
-
-                if (emptySlot == -1) return;
-
-                _inventory.myinventory[emptySlot].item = craftSlot.currentItem;
-                _inventory.myinventory[emptySlot].count = craftSlot.count;
+                _inventory.AddItem(craftSlot.currentItem, craftSlot.count);
 
                 craftSlot.ClearItem();
 
@@ -445,13 +440,11 @@ public class InventoryUIMG : MonoBehaviour
         else if (currentArea == UIArea.FurnaceInput)
         {
             FurnaceSlotUI furnaceSlot = _furnaceUI.inputSlot;
+
             //Furnace Å® Inventory
             if (heldSlot == -1 && furnaceSlot.currentItem != null)
             {
-                int emptySlot = _inventory.GetEmptySlot();
-                if (emptySlot == -1) return;
-                _inventory.myinventory[emptySlot].item = furnaceSlot.currentItem;
-                _inventory.myinventory[emptySlot].count = furnaceSlot.count;
+                _inventory.AddItem(furnaceSlot.currentItem, furnaceSlot.count);
 
                 furnaceSlot.ClearItem();
                 _furnaceUI.UpdateSelection();
@@ -522,8 +515,7 @@ public class InventoryUIMG : MonoBehaviour
             if (resultSlot.currentItem == null)
                 return;
 
-            _inventory.itemGet(
-                resultSlot.currentItem);
+            _inventory.AddItem(resultSlot.currentItem, 1);
 
             resultSlot.ConsumeItem(1);
 
@@ -603,12 +595,16 @@ public class InventoryUIMG : MonoBehaviour
 
         if (TabArea == UITab.Furnace)
         {
-            _furnaceUI.inputSlot.SetItem(
-                slot.item,
-                slot.count);
+            if (_furnaceUI.inputSlot.currentItem == null)
+            { 
+                _furnaceUI.inputSlot.SetItem(slot.item, slot.count);
+            }
+            else if (_furnaceUI.inputSlot.currentItem == slot.item)
+            {
+                _furnaceUI.inputSlot.count += slot.count;
 
-            slot.item = null;
-            slot.count = 0;
+                _furnaceUI.inputSlot.countText.text = _furnaceUI.inputSlot.count.ToString();
+            }
         }
 
         _inventory.OnInventoryChanged?.Invoke();
@@ -654,7 +650,7 @@ public class InventoryUIMG : MonoBehaviour
             CraftSlotUI slot = _craftUI._craftSlots[i];
             if (slot.currentItem == null) continue;
 
-            _inventory.itemGet(slot.currentItem);
+            _inventory.AddItem(slot.currentItem, slot.count);
             slot.ConsumeItem(slot.count);
         }
         _craftUI.UpdateRecipe();

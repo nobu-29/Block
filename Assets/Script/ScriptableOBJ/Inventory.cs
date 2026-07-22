@@ -145,7 +145,56 @@ public class Inventory : ScriptableObject
         return true;
     }
 
+    public int FindStack(ItemObject item)
+    {
+        for (int i = 0; i < myinventory.Length; i++)
+        {
+            if (myinventory[i].item == item && myinventory[i].count < maxStack)
+                return i;
+        }
+        return -1;
+    }
 
+    public void AddItem(ItemObject item, int count)
+    {
+        while(count > 0)
+        {
+            int stackIndex = FindStack(item);
+
+            if(stackIndex != -1)
+            {
+                InventorySlot slot = myinventory[stackIndex];
+
+                int addinventoryCount = Mathf.Min(count, maxStack - slot.count);
+
+                slot.count += addinventoryCount;
+
+                count -= addinventoryCount;
+
+                continue;
+
+            }
+
+            int emptyIndex =
+                       GetEmptySlot();
+
+            if (emptyIndex == -1)
+                break;
+
+            int addCount =
+                Mathf.Min(count, maxStack);
+
+            myinventory[emptyIndex].item =
+                item;
+
+            myinventory[emptyIndex].count =
+                addCount;
+
+            count -= addCount;
+        }
+
+        OnInventoryChanged?.Invoke();
+    }
 }
 
 [System.Serializable]
