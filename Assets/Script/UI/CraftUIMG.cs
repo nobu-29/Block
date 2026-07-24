@@ -79,8 +79,8 @@ public class CraftUIMG : MonoBehaviour
 
         UpdateRecipe();
 
-        _inventoryUI.UpdateUI();
-        _inventoryUI._hotbarslots.UpdateUI();
+        /*_inventoryUI.UpdateUI();
+        _inventoryUI._hotbarslots.UpdateUI();*/
     }
 
     public void CraftAll()
@@ -98,6 +98,15 @@ public class CraftUIMG : MonoBehaviour
 
             Craft();
         }
+    }
+
+    public void ClearSelection()
+    {
+        for(int i = 0; i < _craftSlots.Length; i++)
+        {
+            _craftSlots[i].SetSelect(false);
+        }
+        resultSlot.SetSelect(false);
     }
 
     public void SubmitCraft(InputAction.CallbackContext context)

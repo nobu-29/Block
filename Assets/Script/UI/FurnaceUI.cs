@@ -67,9 +67,9 @@ public class FurnaceUI : MonoBehaviour
         _progressBar.fillAmount = timer / recipe.smeltTime;
     }
 
-    public void UpdateSelection()
+/*    public void UpdateSelection()
     {
         inputSlot.SetSelect(currentSlot == 0);
         outputSlot.SetSelect(currentSlot == 1);
-    }
+    }*/
 }

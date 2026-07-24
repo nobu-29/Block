@@ -23,7 +23,7 @@ public class ChunkMeshWorld : MonoBehaviour
 
     //↓水用のマテリアル設定
     Mesh waterMesh;
-    List<Vector3> waterVertices　= new List<Vector3>();
+    List<Vector3> waterVertices = new List<Vector3>();
     List<int> waterTriangles = new List<int>();
     List<Vector2> waterUV = new List<Vector2>();
     public Material _waterMaterial;

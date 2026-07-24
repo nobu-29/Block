@@ -69,9 +69,8 @@ public class InventoryUIMG : MonoBehaviour
         if (isOpen)
         {
             UpdateUI();
-            UpdateSelection();
+            RefreshSelection();
             _hotbarslots.UpdateUI();
-            _craftUI.UpdataCraftSelection();
             _playerInput.SwitchCurrentActionMap("UI");
         }
         else
@@ -119,16 +118,10 @@ public class InventoryUIMG : MonoBehaviour
 
         if(_inventory.MergeStack(from, to))
         {
-            UpdateUI();
-            _hotbarslots.UpdateUI();
             return;
         }
 
-        var temp = _inventory.myinventory[from];
-
-        _inventory.myinventory[from] = _inventory.myinventory[to];
-
-        _inventory.myinventory[to] = temp;
+        _inventory.SwapSlot(from, to);
 
         UpdateUI();
         _hotbarslots.UpdateUI();
@@ -200,7 +193,7 @@ public class InventoryUIMG : MonoBehaviour
                 0,
                 _hotbarslots.slots.Length - 1);
 
-            UpdateSelection();
+            RefreshSelection();
             return;
 
         }
@@ -223,14 +216,13 @@ public class InventoryUIMG : MonoBehaviour
                 {
                     currentArea = UIArea.FurnaceInput;
                     _furnaceUI.currentSlot = 0;
-                    _furnaceUI.UpdateSelection();
                 }
                 else
                 {
                     currentArea = UIArea.CraftGrid;
                     _craftUI.currentCraftSlot = Mathf.Clamp(currentSlot + 7, 6, 8);
-                    _craftUI.UpdataCraftSelection();
                 }
+
                 RefreshSelection();
                 return;
             }
@@ -258,7 +250,6 @@ public class InventoryUIMG : MonoBehaviour
         else
             currentSlot = Mathf.Clamp(currentSlot, 0, _inventoryslots.Length - 1);
 
-        UpdateSelection();
         RefreshSelection();
     }
 
@@ -298,7 +289,7 @@ public class InventoryUIMG : MonoBehaviour
 
         _craftUI.currentCraftSlot = Mathf.Clamp(_craftUI.currentCraftSlot,0,8);
 
-        _craftUI.UpdataCraftSelection();
+        RefreshSelection();
     }
 
 
@@ -309,14 +300,11 @@ public class InventoryUIMG : MonoBehaviour
         {
             Color color = normalColor;
 
-            if (!selectingHotbar)
-            {
-                if (i == heldSlot && !heldFromHotbar)
-                    color = heldColor;
+            if (i == heldSlot && !heldFromHotbar)
+                color = heldColor;
 
-                else if (i == currentSlot)
-                    color = selectedColor;
-            }
+            else if (!selectingHotbar && i == currentSlot)
+                color = selectedColor;
 
             _inventoryslots[i].selecctionFrame.color = color;
 
@@ -327,14 +315,12 @@ public class InventoryUIMG : MonoBehaviour
         {
             Color color = normalColor;
 
-            if (selectingHotbar)
-            {
-                if (heldFromHotbar && heldSlot == i)
-                    color = heldColor;
+            if (heldFromHotbar && heldSlot == i)
+                color = heldColor;
 
-                else if (currentSlot == i)
-                    color = selectedColor;
-            }
+            else if (selectingHotbar && currentSlot == i)
+                color = selectedColor;
+
             _hotbarslots.slots[i].select.color = color;
         }
     }
@@ -447,7 +433,7 @@ public class InventoryUIMG : MonoBehaviour
                 _inventory.AddItem(furnaceSlot.currentItem, furnaceSlot.count);
 
                 furnaceSlot.ClearItem();
-                _furnaceUI.UpdateSelection();
+                RefreshSelection();
                 return;
             }
 
@@ -466,7 +452,7 @@ public class InventoryUIMG : MonoBehaviour
                 if (invSlot.item == null)
                     return;
 
-                if (!_furnaceUI.furnaceSystem.Cansmelt(invSlot.item))
+                if (!_furnaceUI.furnaceSystem.CanSmelt(invSlot.item))
                 {
                     Debug.Log("êªòBÇ≈Ç´Ç»Ç¢ÉAÉCÉeÉÄ");
                     return;
@@ -547,7 +533,7 @@ public class InventoryUIMG : MonoBehaviour
             heldFromHotbar = false;
         }
 
-        UpdateSelection();
+        RefreshSelection();
         _hotbarslots.UpdateUI();
     }
 
@@ -602,11 +588,7 @@ public class InventoryUIMG : MonoBehaviour
 
         }
 
-        int inventoryIndex =
-            selectingHotbar
-            ? currentSlot
-            : currentSlot +
-              _inventory.hotbarSize;
+        int inventoryIndex = selectingHotbar ? currentSlot : currentSlot +_inventory.hotbarSize;
 
         InventorySlot slot =
             _inventory.myinventory[
@@ -620,12 +602,17 @@ public class InventoryUIMG : MonoBehaviour
             if (_furnaceUI.inputSlot.currentItem == null)
             { 
                 _furnaceUI.inputSlot.SetItem(slot.item, slot.count);
+
+                slot.item = null;
+                slot.count = 0;
             }
             else if (_furnaceUI.inputSlot.currentItem == slot.item)
             {
                 _furnaceUI.inputSlot.count += slot.count;
+                _furnaceUI.inputSlot.UpdateCountText();
 
-                _furnaceUI.inputSlot.countText.text = _furnaceUI.inputSlot.count.ToString();
+                slot.item = null;
+                slot.count = 0;
             }
         }
         _inventory.OnInventoryChanged?.Invoke();
@@ -643,25 +630,48 @@ public class InventoryUIMG : MonoBehaviour
                 _furnacePanel.SetActive(true);
                 currentArea = UIArea.FurnaceInput;
                 _furnaceUI.currentSlot = 0;
-                _furnaceUI.UpdateSelection();
+                RefreshSelection();
                 break;
+
             case UITab.Furnace:
                 TabArea = UITab.Craft;
                 _furnacePanel.SetActive(false);
                 currentArea = UIArea.CraftGrid;
                 _craftUI.currentCraftSlot = 0;
-                _craftUI.UpdataCraftSelection();
+                RefreshSelection();
                 break;
         }
     }
 
     void RefreshSelection()
     {
+        Debug.Log("RefreshSelection : " + currentArea);
+
+        _craftUI.ClearSelection();
+
+        _furnaceUI.inputSlot.SetSelect(false);
+        _furnaceUI.outputSlot.SetSelect(false);
+
         UpdateSelection();
 
-        _craftUI.UpdataCraftSelection();
+        switch (currentArea)
+        {
+            case UIArea.CraftGrid:
+                _craftUI.UpdataCraftSelection();
+                break;
 
-        _craftUI.resultSlot.SetSelect(currentArea == UIArea.CraftResult);
+            case UIArea.CraftResult:
+                _craftUI.resultSlot.SetSelect(true);
+                break;
+
+            case UIArea.FurnaceInput:
+                _furnaceUI.inputSlot.SetSelect(true);
+                break;
+
+            case UIArea.FurnaceResult:
+                _furnaceUI.outputSlot.SetSelect(true);
+                break;
+        }
     }
 
     void ReturnCraftItems()
@@ -697,7 +707,7 @@ public class InventoryUIMG : MonoBehaviour
             return;
         }
 
-        _furnaceUI.UpdateSelection();
+        RefreshSelection();
     }
 
     private void OnEnable()

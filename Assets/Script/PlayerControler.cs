@@ -34,7 +34,8 @@ public class PlayerControler : MonoBehaviour
 
     private void Update()
     {
-        if (transform.position.y <= blockchunk.worldMinY@- 10) transform.position = _resetPos;
+        if (transform.position.y <= blockchunk.worldMinY - 10) 
+            transform.position = _resetPos;
     }
 
     void FixedUpdate()
