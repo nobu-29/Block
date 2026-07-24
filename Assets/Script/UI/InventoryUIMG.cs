@@ -599,6 +599,9 @@ public class InventoryUIMG : MonoBehaviour
 
         if (TabArea == UITab.Furnace)
         {
+            if (!_furnaceUI.furnaceSystem.CanSmelt(slot.item))
+                return;
+
             if (_furnaceUI.inputSlot.currentItem == null)
             { 
                 _furnaceUI.inputSlot.SetItem(slot.item, slot.count);
