@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7933328427bb62547be9c647116d88f7, type: 3}
+  m_Name: Fe_IngotRecipe
+  m_EditorClassIdentifier: 
+  inputItem: {fileID: 11400000, guid: 5ab5545ebb61e4d4f9fe2d50aca3bd40, type: 2}
+  outputItem: {fileID: 11400000, guid: ed872a6e6e8d17a479aff1375a94c57a, type: 2}
+  smeltTime: 6

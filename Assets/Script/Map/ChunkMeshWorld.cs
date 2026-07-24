@@ -420,11 +420,11 @@ public class ChunkMeshWorld : MonoBehaviour
         else if (id == 16)
             return GetUV(3, 3);
 
-        // 鉄（元素番号26）
+        // 鉄（元素番号26）id = 27　インゴット
         else if (id == 26)
             return GetUV(3, 1);
 
-        // 金（元素番号79）
+        // 金（元素番号79）id = 80　インゴット
         else if (id == 79)
             return GetUV(0, 1);
 
