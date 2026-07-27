@@ -5123,6 +5123,10 @@ MonoBehaviour:
     item: {fileID: 11400000, guid: 5ab5545ebb61e4d4f9fe2d50aca3bd40, type: 2}
   - blockID: 79
     item: {fileID: 11400000, guid: 889e22e4cc55d7b4b9e4a2fa4e2dd281, type: 2}
+  - blockID: 15
+    item: {fileID: 11400000, guid: f1e7165a11991d5478766801d5449806, type: 2}
+  - blockID: 16
+    item: {fileID: 11400000, guid: 19989e65c5ffbdc4f8a0c8883cae4f5c, type: 2}
 --- !u!114 &639944131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5152,6 +5156,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   recipes:
   - {fileID: 11400000, guid: 6d14ad87b1c2652429b1349bf7c33e9d, type: 2}
+  - {fileID: 11400000, guid: a4e99eb398353ed449afc8d4dbcef243, type: 2}
+  - {fileID: 11400000, guid: 68774177e5d391049b8fe53bd803d8ea, type: 2}
 --- !u!1 &657237491
 GameObject:
   m_ObjectHideFlags: 0
@@ -15242,37 +15248,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1902278797}
   m_CullTransparentMesh: 1
---- !u!1 &1908985005
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1908985006}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1908985006
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1908985005}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1923960922}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1909244180
 GameObject:
   m_ObjectHideFlags: 0
@@ -15823,7 +15798,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1210267265}
-  - {fileID: 1908985006}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &1923960924
@@ -15846,7 +15820,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.45
-  m_Height: 0.98
+  m_Height: 0.9
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1923960925
@@ -15875,7 +15849,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!1 &1927409798
 GameObject:
   m_ObjectHideFlags: 0

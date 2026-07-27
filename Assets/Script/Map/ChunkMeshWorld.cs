@@ -154,7 +154,7 @@ public class ChunkMeshWorld : MonoBehaviour
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
 
-        _meshCollider.sharedMesh = null;
+        //_meshCollider.sharedMesh = null;
         //mesh.RecalculateBounds();
         _meshCollider.sharedMesh = mesh;
 

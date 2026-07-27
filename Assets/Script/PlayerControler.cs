@@ -27,6 +27,9 @@ public class PlayerControler : MonoBehaviour
 
     private Vector3 _resetPos;
 
+    private Vector3 bottom;
+    private Vector3 top;
+
     public void Start()
     {
         _resetPos = transform.position;
@@ -57,8 +60,55 @@ public class PlayerControler : MonoBehaviour
         Vector3 move = forward * moveInput.y + right * moveInput.x;
 
         float speed = _isDash ? MoveSpeed * MoveBoost : MoveSpeed;
-        _rb.MovePosition(transform.position + move * speed * Time.fixedDeltaTime);
-        //transform.Translate(move * speed * Time.deltaTime, Space.World);
+
+        /*RaycastHit hit;
+
+        if (Physics.CapsuleCast(transform.position + Vector3.up * 0.5f, transform.position + Vector3.up * 1.2f, 0.35f,move.normalized, out hit, speed * Time.fixedDeltaTime * 0.5f)){
+            if (hit.normal.y < 0.3f)
+                return;
+        }
+
+        Vector3 targetPos = _rb.position + move * speed * Time.fixedDeltaTime;
+        _rb.MovePosition(targetPos);*/
+
+        Vector3 moveX = new Vector3(move.x, 0, 0);
+        Vector3 moveZ = new Vector3(0, 0, move.z);
+        float moveDistance = speed * Time.fixedDeltaTime;
+        Vector3 position = _rb.position;
+
+        if (moveX != Vector3.zero)
+        {
+            bottom = position + Vector3.up * 0.5f;
+            top = position + Vector3.up * 1f;
+
+            if (Physics.CapsuleCast(bottom, top, 0.05f, moveX.normalized, out RaycastHit hit, moveDistance))
+            {
+                Debug.Log("X Hit : " + hit.point);
+            }
+
+            if (!Physics.CapsuleCast(bottom,top,0.05f,moveX.normalized,moveDistance))
+            {
+                position += moveX * moveDistance;
+            }
+        }
+
+        if (moveZ != Vector3.zero)
+        {
+            bottom = position + Vector3.up * 0.5f;
+            top = position + Vector3.up * 1f;
+
+            if (Physics.CapsuleCast(bottom, top, 0.05f, moveZ.normalized, out RaycastHit hit, moveDistance))
+            {
+                Debug.Log("Z Hit : " + hit.point);
+            }
+
+            if (!Physics.CapsuleCast(bottom,top,0.05f,moveZ.normalized,moveDistance))
+            {
+                position += moveZ * moveDistance;
+            }
+        }
+
+        _rb.MovePosition(position);
 
         DrawBlockOutline();
         //HandleOutline();
