@@ -76,35 +76,28 @@ public class PlayerControler : MonoBehaviour
         float moveDistance = speed * Time.fixedDeltaTime;
         Vector3 position = _rb.position;
 
+
+        bottom = position + Vector3.up * 0.3f;
+        top = position + Vector3.up * 1.0f;
+
+
         if (moveX != Vector3.zero)
         {
-            bottom = position + Vector3.up * 0.5f;
-            top = position + Vector3.up * 1f;
+            Vector3 nextPos = position + moveX * moveDistance;
 
-            if (Physics.CapsuleCast(bottom, top, 0.05f, moveX.normalized, out RaycastHit hit, moveDistance))
+            if (CanMoveTo(nextPos))
             {
-                Debug.Log("X Hit : " + hit.point);
-            }
-
-            if (!Physics.CapsuleCast(bottom,top,0.05f,moveX.normalized,moveDistance))
-            {
-                position += moveX * moveDistance;
+                position = nextPos;
             }
         }
 
         if (moveZ != Vector3.zero)
         {
-            bottom = position + Vector3.up * 0.5f;
-            top = position + Vector3.up * 1f;
+            Vector3 nextPos = position + moveZ * moveDistance;
 
-            if (Physics.CapsuleCast(bottom, top, 0.05f, moveZ.normalized, out RaycastHit hit, moveDistance))
+            if (CanMoveTo(nextPos))
             {
-                Debug.Log("Z Hit : " + hit.point);
-            }
-
-            if (!Physics.CapsuleCast(bottom,top,0.05f,moveZ.normalized,moveDistance))
-            {
-                position += moveZ * moveDistance;
+                position = nextPos;
             }
         }
 
@@ -122,6 +115,39 @@ public class PlayerControler : MonoBehaviour
         //ã¸Žž
         else if (_rb.linearVelocity.y > 0)
             _rb.AddForce(Physics.gravity * 1.2f, ForceMode.Acceleration);
+    }
+
+    bool CanMoveTo(Vector3 pos)
+    {
+        float radius = 0.3f;
+
+        Vector3[] offsets =
+        {
+            Vector3.zero,
+            Vector3.right * radius,
+            Vector3.left * radius,
+            Vector3.forward * radius,
+            Vector3.back * radius
+        };
+
+        foreach (Vector3 offset in offsets)
+        {
+            Vector3 foot = pos + offset;
+            Vector3 head = pos + offset + Vector3.up * 1f;
+
+            if (!IsPassable(foot)) return false;
+
+            if (!IsPassable(head)) return false;
+        }
+
+        return true;
+    }
+
+    bool IsPassable (Vector3 pos)
+    {
+        int blockID = blockchunk.GetBlock(Vector3Int.FloorToInt(pos));
+
+        return !blockchunk.IsSolid(blockID);
     }
 
     public void Move(InputAction.CallbackContext context)
@@ -145,14 +171,6 @@ public class PlayerControler : MonoBehaviour
         }
 
     }
-    /*    private void OnCollisionEnter(Collision collision)
-        {
-           if(collision.gameObject.layer == "Block")
-            {
-
-            }
-             _isJump = true;
-        }*/
 
     // --- ƒuƒƒbƒN”j‰ó ---
     public void BreakBlock(InputAction.CallbackContext context)
@@ -232,27 +250,13 @@ public class PlayerControler : MonoBehaviour
 
     bool CheckGrounded()
     {
+
         float checkDistance = 1.2f;
 
         bool grounded = Physics.Raycast(transform.position, Vector3.down, checkDistance, LayerMask.GetMask("Block"));
 
         return  grounded;
     }
-
-    /*    bool TryGetTargetBlock(out Vector3Int blockPos)
-        {
-            blockPos = default;
-
-            Ray ray = new Ray(_camera.transform.position, _camera.transform.forward);
-
-            if(Physics.Raycast(ray, out RaycastHit hit, reachDistance))
-            {
-                Vector3 hitPos = hit.point - hit.normal * 0.01f;
-                blockPos = Vector3Int.FloorToInt(hitPos);
-                return true;
-            }
-            return false;
-        }*/
 
     void HandleOutline()
     {
@@ -308,12 +312,10 @@ public class PlayerControler : MonoBehaviour
 
     bool IsInWater()
     {
-        Vector3Int blockPos =
-            Vector3Int.FloorToInt(transform.position);
+        Vector3Int blockPos = Vector3Int.FloorToInt(transform.position);
 
-        int blockID =
-            blockchunk.GetBlock(blockPos);
+        int blockID = blockchunk.GetBlock(blockPos);
 
-        return blockID == 8;
+        return blockID == 8 || (blockID >= 800 && blockID <= 806);
     }
 }

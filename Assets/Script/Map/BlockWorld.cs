@@ -431,4 +431,26 @@ public class BlockWorld : MonoBehaviour
 
         return 807 - id;
     }
+
+    public bool IsSolid(int blockID)
+    {
+        switch (blockID)
+        {
+            //‹ó‹C
+            case 0:
+            // …
+            case 8:
+            // …—¬
+            case 800:
+            case 801:
+            case 802:
+            case 803:
+            case 804:
+            case 805:
+            case 806:
+                return false;
+        }
+
+        return true;
+    }
 }
