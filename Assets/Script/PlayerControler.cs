@@ -53,29 +53,15 @@ public class PlayerControler : MonoBehaviour
         forward.y = 0;
         right.y = 0;
 
-        /*    forward.Normalize();
-            right.Normalize();*/
-
         // “ü—Í‚É‰ž‚¶‚ÄˆÚ“®•ûŒü‚ðŒˆ’è
         Vector3 move = forward * moveInput.y + right * moveInput.x;
 
         float speed = _isDash ? MoveSpeed * MoveBoost : MoveSpeed;
 
-        /*RaycastHit hit;
-
-        if (Physics.CapsuleCast(transform.position + Vector3.up * 0.5f, transform.position + Vector3.up * 1.2f, 0.35f,move.normalized, out hit, speed * Time.fixedDeltaTime * 0.5f)){
-            if (hit.normal.y < 0.3f)
-                return;
-        }
-
-        Vector3 targetPos = _rb.position + move * speed * Time.fixedDeltaTime;
-        _rb.MovePosition(targetPos);*/
-
         Vector3 moveX = new Vector3(move.x, 0, 0);
         Vector3 moveZ = new Vector3(0, 0, move.z);
         float moveDistance = speed * Time.fixedDeltaTime;
         Vector3 position = _rb.position;
-
 
         bottom = position + Vector3.up * 0.3f;
         top = position + Vector3.up * 1.0f;
@@ -196,6 +182,14 @@ public class PlayerControler : MonoBehaviour
 
 
             blockchunk.ModifyBlock(blockPos, 0);
+
+            Debug.Log(blockchunk.GetBlock(blockPos + Vector3Int.up));
+
+            Vector3Int above = blockPos + Vector3Int.up;
+            int aboveID = blockchunk.GetBlock(above);
+
+            if (aboveID == 8 || (aboveID >= 800 && aboveID <= 806))
+                blockchunk.ActivateWater(above);
         }
         _hotbar.UpdateUI();
         _inventoryUI.UpdateUI();
