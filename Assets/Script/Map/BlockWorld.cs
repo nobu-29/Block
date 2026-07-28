@@ -35,6 +35,7 @@ public class BlockWorld : MonoBehaviour
 
     private HashSet<Vector3Int> activeWater = new HashSet<Vector3Int>();
     private HashSet<Vector3Int> waterSources = new HashSet<Vector3Int>();
+    private HashSet<ChunkMeshWorld> dirtyChunks = new HashSet<ChunkMeshWorld>();
 
     private Vector2Int currentPlayerChunk;
     private Queue<GameObject> chunkPool = new Queue<GameObject>();
@@ -63,6 +64,12 @@ public class BlockWorld : MonoBehaviour
             waterTimer = 0;
             UpdateWater();
         }
+
+        foreach (var chunk in dirtyChunks)
+        {
+            chunk.SetDirty();
+        }
+        dirtyChunks.Clear();
     }
 
 
@@ -148,7 +155,7 @@ public class BlockWorld : MonoBehaviour
         foreach (var waterchunk in activeWater)
         {
             Vector3 playerPos = _player.position;
-            if((waterchunk - Vector3Int.FloorToInt(playerPos)).sqrMagnitude > 2500)
+            if((waterchunk - Vector3Int.FloorToInt(playerPos)).sqrMagnitude > 625)
             {
                 continue;
             }
@@ -174,8 +181,7 @@ public class BlockWorld : MonoBehaviour
 
         foreach (var source in waterSources)
         {
-            if (!newWater.Contains(source))
-                newWater.Add(source);
+            newWater.Add(source);
         }
 
         activeWater = newWater;
@@ -431,9 +437,7 @@ public class BlockWorld : MonoBehaviour
 
         chunkMesh.blocks[x, localY, z] = blockID;
 
-        chunkMesh.SetDirty();
-
-
+        dirtyChunks.Add(chunks[chunkPos]);
     }
 
     public int GetBlock(Vector3Int worldPos)
@@ -506,7 +510,6 @@ public class BlockWorld : MonoBehaviour
             return;
 
         ModifyBlock(pos, 807 - level);
-        if(!newWater.Contains(pos))
-            newWater.Add(pos);
+        newWater.Add(pos);
     }
 }
