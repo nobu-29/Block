@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter),typeof(MeshRenderer),typeof(MeshCollider))]
 public class ChunkMeshWorld : MonoBehaviour
 {
+    public BlockWorld world;
+
     public int _chunkSize = 16;
     public int height = 96;
     public int worldMinY = -32;
@@ -68,6 +70,10 @@ public class ChunkMeshWorld : MonoBehaviour
         _waterMeshRenderer.material = _waterMaterial;
     }
 
+    public void Initialize(BlockWorld worldRef)
+    {
+        world = worldRef;
+    }
     private void Update()
     {
         if (!isDirty) return;
@@ -177,14 +183,20 @@ public class ChunkMeshWorld : MonoBehaviour
         int ny = y + (int)dir.y;
         int nz = z + (int)dir.z;
 
-        if (nx >= 0 && nx < _chunkSize &&
+        /*if (nx >= 0 && nx < _chunkSize &&
             ny >= 0 && ny < height &&
             nz >= 0 && nz < _chunkSize)
-        {
-            int neighborID = blocks[nx, ny, nz];
-            //何もない空気と水以外なら隠す
-            if (neighborID != 0 && !IsWater(neighborID)) return;
-        }
+        { }*/
+
+        int neighborID = GetNeighborBlock(nx, ny, nz);
+
+        //空気の場合
+        if (neighborID == -1)
+            return;
+
+        //何もない空気と水以外なら隠す
+        if (neighborID != 0 && !IsWater(neighborID)) 
+                return;
 
         AddFace(new Vector3(x, y + worldMinY, z), dir, blocks[x, y, z]);
     }
@@ -195,16 +207,21 @@ public class ChunkMeshWorld : MonoBehaviour
         int ny = y + (int)dir.y;
         int nz = z + (int)dir.z;
 
-        if (nx >= 0 && nx < _chunkSize &&
+        /*if (nx >= 0 && nx < _chunkSize &&
            ny >= 0 && ny < height &&
            nz >= 0 && nz < _chunkSize)
-        {
-            int neighborID = blocks[nx, ny, nz];
-            if (neighborID != 0 && !IsWater(neighborID))
-                return;
-            else if (IsWater(neighborID))
-                return;
-        }
+        { }*/
+
+        int neighborID = GetNeighborBlock(nx, ny, nz);
+
+        if (neighborID == -1)
+            return;
+
+        if (IsWater(neighborID))
+            return;
+
+        if (neighborID != 0)
+            return;
 
         AddWaterFace(new Vector3(x, y + worldMinY, z),dir);
     }
@@ -353,6 +370,23 @@ public class ChunkMeshWorld : MonoBehaviour
         return id == 8 || (id >= 800 && id <= 806);
     }
 
+    int GetNeighborBlock(int x, int y, int z)
+    {
+        if(x >= 0 && x < _chunkSize && 
+            y >= 0 && y < height && 
+            z >= 0 && z < _chunkSize)
+        {
+            return blocks[x, y, z];
+        }
+
+        Vector3Int worldPos = new Vector3Int(
+            (int)transform.position.x + x,
+            y + worldMinY,
+            (int)transform.position.z + z
+            );
+
+        return world.GetBlock(worldPos);
+    }
 
     Vector2 GetUV(int x, int y)
     {

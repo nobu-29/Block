@@ -243,6 +243,7 @@ public class BlockWorld : MonoBehaviour
         chunkObj.name = $"Chunk_{chunkPos.x}_{chunkPos.y}";
 
         var chunkMesh = chunkObj.GetComponent<ChunkMeshWorld>();
+        chunkMesh.Initialize(this);
 
         //chunkMesh.blocks = new int[chunkMesh._chunkSize, chunkMesh.height, chunkMesh._chunkSize];
         if(chunkMesh.blocks == null)
