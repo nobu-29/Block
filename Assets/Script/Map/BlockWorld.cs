@@ -36,7 +36,7 @@ public class BlockWorld : MonoBehaviour
     public Dictionary<Vector2Int, ChunkMeshWorld> chunks = new Dictionary<Vector2Int, ChunkMeshWorld>();
 
     private Dictionary<Vector2Int, ChunkData> savedChunks = new Dictionary<Vector2Int, ChunkData>();
-    private HashSet<Vector2Int> generatedChunks = new HashSet<Vector2Int>();
+    //private HashSet<Vector2Int> generatedChunks = new HashSet<Vector2Int>();
 
     private HashSet<Vector3Int> activeWater = new HashSet<Vector3Int>();
     private HashSet<Vector3Int> waterSources = new HashSet<Vector3Int>();
@@ -116,7 +116,8 @@ public class BlockWorld : MonoBehaviour
                 {
                     int cx = Mathf.FloorToInt((float)w.x / chunkSize);
                     int cz = Mathf.FloorToInt((float)w.z / chunkSize); 
-                    if (cx == pos.x && cz == pos.y) { removeWater.Add(w);}
+                    if (cx == pos.x && cz == pos.y)
+                        removeWater.Add(w);
                 }
 
                 foreach (var w in removeWater) 
@@ -219,6 +220,12 @@ public class BlockWorld : MonoBehaviour
             
         }
 */
+        if (chunks.ContainsKey(chunkPos))
+        {
+            chunks[chunkPos].gameObject.SetActive(true);
+            return;
+        }
+
 
         GameObject chunkObj;
 
@@ -337,8 +344,8 @@ public class BlockWorld : MonoBehaviour
 
                     GetChunkData(chunkPos).waterSources.Add(waterPos);
 
-                    waterSources.Add(waterPos);
-                    activeWater.Add(waterPos);
+                    /*waterSources.Add(waterPos);
+                    activeWater.Add(waterPos);*/
                 }
             }
         }
@@ -478,12 +485,14 @@ public class BlockWorld : MonoBehaviour
 
         chunkMesh.blocks[x, localY, z] = blockID;
 
-        if (!savedChunks.ContainsKey(chunkPos))
+        ChunkData data = GetChunkData(chunkPos);
+        data.modifiedBlocks[worldPos] = blockID;
+        /*if (!savedChunks.ContainsKey(chunkPos))
         {
             savedChunks[chunkPos] = new ChunkData();
-        }
+        }*/
 
-        savedChunks[chunkPos].modifiedBlocks[worldPos] = blockID;
+        //savedChunks[chunkPos].modifiedBlocks[worldPos] = blockID;
 
         dirtyChunks.Add(chunkMesh);
     }
@@ -546,6 +555,7 @@ public class BlockWorld : MonoBehaviour
     public void ActivateWater(Vector3Int waterPos)
     {
         activeWater.Add(waterPos);
+        waterSources.Add(waterPos);
 
         Vector2Int chunkPos = new Vector2Int(Mathf.FloorToInt((float)waterPos.x / chunkSize), Mathf.FloorToInt((float)waterPos.z / chunkSize));
         GetChunkData(chunkPos).waterSources.Add(waterPos);
