@@ -436,11 +436,28 @@ public class ChunkMeshWorld : MonoBehaviour
         else if (id == 6)
             return GetUV(1, 4);
 
+        //白樺の板
+        else if (id == 7)
+            return GetUV(1, 5);
+
         // 水 id 8,800～806
 
         // 雪
         else if (id == 9)
             return GetUV(0, 4);
+
+        //白樺の幹
+        else if (id == 10)
+        {
+            if (dir == Vector3.up || dir == Vector3.down)
+                return GetUV(3, 4);
+            else
+                return GetUV(0, 5);
+        }
+
+        //白樺の葉
+        else if (id == 11)
+            return GetUV(2,4);
 
         //砂（ケイ素の元素番号14）
         else if (id == 14)

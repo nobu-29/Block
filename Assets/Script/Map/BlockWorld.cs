@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static Unity.Burst.Intrinsics.X86;
 
 [System.Serializable]
 public class ChunkData
@@ -11,6 +12,18 @@ public class ChunkData
 
 public class BlockWorld : MonoBehaviour
 {
+    public enum Biome
+    {
+        Ocean,
+        Plains,
+        Forest,
+        BirchForest,
+        Taiga,
+        Desert,
+        Mountains,
+        SnowMountains
+    }
+
     public GameObject chunkPrefab;
 
     public Transform _player;
@@ -261,26 +274,62 @@ public class BlockWorld : MonoBehaviour
             {
                 int worldX = x + chunkPos.x * chunkSize;
                 int worldZ = z + chunkPos.y * chunkSize;
+                Biome biome;
+                
+                //バイオーム生成用コード
+                float biomeNoise = Mathf.PerlinNoise(worldX * 0.005f, worldZ * 0.005f);
+
+                if (biomeNoise < 0.15f)
+                    biome = Biome.Ocean;
+                else if (biomeNoise < 0.3f)
+                    biome = Biome.Plains;
+                else if (biomeNoise < 0.45f)
+                    biome = Biome.Forest;
+                else if (biomeNoise < 0.6f)
+                    biome = Biome.BirchForest;
+                else if (biomeNoise < 0.75f) 
+                    biome = Biome.Taiga; 
+                else if (biomeNoise < 0.85f) 
+                    biome = Biome.Desert;
+                else if (biomeNoise < 0.95f) 
+                    biome = Biome.Mountains;
+                else 
+                    biome = Biome.SnowMountains;
 
                 float height = Mathf.PerlinNoise(worldX * noiseScale, worldZ * noiseScale) * heightMultiplier + Mathf.PerlinNoise(worldX * noiseScale_mini, worldZ * noiseScale_mini) * heightMultiplier_mini;
+                float mountainNoise = Mathf.PerlinNoise(worldX * 0.01f, worldZ * 0.01f);
 
-                //バイオーム生成用コード
-                float biomeNoise = Mathf.PerlinNoise(worldX * 0.01f, worldZ * 0.01f);
+                if (biome == Biome.Mountains)
+                {
+                    height += mountainNoise * 20f;
+                }
+                else if (biome == Biome.SnowMountains)
+                {
+                    height += mountainNoise * 35f;
+                }
+                else if(biome == Biome.Ocean)
+                {
+                    float oceanNoise = Mathf.PerlinNoise(worldX * 0.03f, worldZ * 0.03f);
+
+                    height = seaLevel - (oceanNoise * 6f);
+                }
+
 
                 float forestNoise = Mathf.PerlinNoise(worldX * 0.04f, worldZ * 0.04f);
 
-                //砂漠にするかどうかの判定
+               /* //砂漠にするかどうかの判定
                 bool isDesert = biomeNoise > 0.7f;
 
                 bool isPlains = biomeNoise >= 0.4f && biomeNoise < 0.7f;
 
                 bool isForest = biomeNoise >= 0.2f && biomeNoise < 0.4f;
 
-                bool isSnow = biomeNoise < 0.2f;
+                bool isSnow = biomeNoise < 0.2f;*/
 
                 int h = Mathf.FloorToInt(height);
 
-                if (!isDesert && h < seaLevel) h = seaLevel;
+                if (biome != Biome.Ocean && biome != Biome.Desert && h < seaLevel)
+                    h = seaLevel;
 
                 for (int y = worldMinY; y <= h; y++)
                 {
@@ -292,9 +341,9 @@ public class BlockWorld : MonoBehaviour
                         chunkMesh.blocks[x, localY, z] = 99; // 岩盤
                     else if(y == h)
                     {
-                        if (isDesert)
+                        if (biome == Biome.Desert)
                             chunkMesh.blocks[x, localY, z] = 14; // 砂
-                        else if (isSnow)
+                        else if (biome == Biome.SnowMountains || h > 40)
                             chunkMesh.blocks[x, localY, z] = 9; //雪
                         else
                             chunkMesh.blocks[x, localY, z] = 1; // 草
@@ -304,20 +353,27 @@ public class BlockWorld : MonoBehaviour
                         {
                             if (!HasNearbyTree(chunkMesh, x, chunkMesh.WorldYToLocalY(y), z, 3))
                             {
-                                if (isForest && forestNoise > 0.4f)
+                                if (biome == Biome.Forest && forestNoise > 0.5f)
                                     TrySpawnTree(chunkMesh, x, y, z, 15f);
 
-                                else if (isPlains && forestNoise > 0.8f)
+                                else if (biome == Biome.BirchForest && forestNoise > 0.45f)
+                                    TrySpawnBirchTree(chunkMesh, x, y, z, treeRate);
+
+                                else if (biome == Biome.Taiga && forestNoise > 0.4f)
+                                    TrySpawnTree(chunkMesh, x, y, z, 20f);
+
+                                else if (biome == Biome.Plains && forestNoise > 0.85f)
                                     TrySpawnTree(chunkMesh, x, y, z, treeRate);
                             }
                         }
                     }
+                    //地中の層
                     else if (y > h - 3)
                     {
 
-                        if(isDesert)
+                        if(biome == Biome.Desert)
                             chunkMesh.blocks[x, localY, z] = 14; // 砂
-                        else if (isSnow)
+                        else if (biome == Biome.SnowMountains || h > 40)
                             chunkMesh.blocks[x, localY, z] = 9; //雪
                         else
                             chunkMesh.blocks[x, localY, z] = 2; // 土
@@ -351,10 +407,9 @@ public class BlockWorld : MonoBehaviour
                     Vector3Int waterPos = new Vector3Int(worldX, waterY, worldZ);
 
                     GetChunkData(chunkPos).waterSources.Add(waterPos);
-
-                    /*waterSources.Add(waterPos);
-                    activeWater.Add(waterPos);*/
                 }
+                if (worldX == 0 && worldZ == 0)
+                    Debug.Log($"Biome = {biome}");
             }
         }
 
@@ -447,6 +502,54 @@ public class BlockWorld : MonoBehaviour
 
     }
 
+    void TrySpawnBirchTree(ChunkMeshWorld chunk, int x, int groundY, int z, float chance)
+    {
+        if (Random.Range(0f, 100f) > chance)
+            return;
+        int trunkHeight = Random.Range(6, 9);
+
+        for(int i = 1; i <= trunkHeight; i++)
+        {
+            int ly = chunk.WorldYToLocalY(groundY + i);
+
+            if (ly >= chunk.height)
+                return;
+            chunk.blocks[x, ly, z] = 10;
+        }
+
+        int leafCenter =
+           chunk.WorldYToLocalY(
+               groundY + trunkHeight
+           );
+
+        for (int lx = -2; lx <= 2; lx++)
+        {
+            for (int lz = -2; lz <= 2; lz++)
+            {
+                for (int ly = -2; ly <= 1; ly++)
+                {
+                    int nx = x + lx;
+                    int ny = leafCenter + ly;
+                    int nz = z + lz;
+
+                    if (nx < 0 || nx >= chunkSize) continue;
+                    if (nz < 0 || nz >= chunkSize) continue;
+                    if (ny < 0 || ny >= chunk.height) continue;
+
+                    float distance =
+                        lx * lx +
+                        ly * ly +
+                        lz * lz;
+
+                    if (distance > 6) continue;
+
+                    if (chunk.blocks[nx, ny, nz] == 0)
+                        chunk.blocks[nx, ny, nz] = 11;
+                }
+            }
+        }
+    }
+
     bool HasNearbyTree(ChunkMeshWorld chunk, int x, int y, int z, int radius)
     {
         for(int dx = -radius; dx <= radius; dx++)
@@ -464,7 +567,7 @@ public class BlockWorld : MonoBehaviour
 
                 for (int ny = Mathf.Max(0, y -4); ny <= Mathf.Min(chunk.height - 1, y + 8); ny++)
                 {
-                    if (chunk.blocks[nx, ny, nz] == 4)
+                    if (chunk.blocks[nx, ny, nz] == 4 || chunk.blocks[nx, ny, nz] == 40)
                         return true;
                 }
             }

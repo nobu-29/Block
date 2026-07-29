@@ -5125,8 +5125,12 @@ MonoBehaviour:
     item: {fileID: 11400000, guid: 889e22e4cc55d7b4b9e4a2fa4e2dd281, type: 2}
   - blockID: 15
     item: {fileID: 11400000, guid: f1e7165a11991d5478766801d5449806, type: 2}
+  - blockID: 10
+    item: {fileID: 11400000, guid: 3cbe6c142a605554684a731768c6ca7f, type: 2}
   - blockID: 16
     item: {fileID: 11400000, guid: 19989e65c5ffbdc4f8a0c8883cae4f5c, type: 2}
+  - blockID: 11
+    item: {fileID: 11400000, guid: 838353b5de6eceb4f858671f53b6aee6, type: 2}
 --- !u!114 &639944131
 MonoBehaviour:
   m_ObjectHideFlags: 0
