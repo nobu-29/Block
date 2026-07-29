@@ -299,11 +299,18 @@ public class BlockWorld : MonoBehaviour
                         else
                             chunkMesh.blocks[x, localY, z] = 1; // ‘
 
-                        if (isForest && forestNoise > 0.4f) 
-                            TrySpawnTree(chunkMesh, x, y, z, 15f);
+                        //ƒ`ƒƒƒ“ƒNƒMƒŠƒMƒŠŽü•Ó‚Å–Ø‚ð¶¬‚³‚¹‚È‚¢‚æ‚¤‚É‚µ‚Ä‚¢‚é
+                        if (x >= 3 && x <= chunkSize - 4 && z >= 3 && z <= chunkSize - 4)
+                        {
+                            if (!HasNearbyTree(chunkMesh, x, chunkMesh.WorldYToLocalY(y), z, 3))
+                            {
+                                if (isForest && forestNoise > 0.4f)
+                                    TrySpawnTree(chunkMesh, x, y, z, 15f);
 
-                        else if (isPlains && forestNoise > 0.8f) 
-                            TrySpawnTree(chunkMesh, x, y, z, treeRate);
+                                else if (isPlains && forestNoise > 0.8f)
+                                    TrySpawnTree(chunkMesh, x, y, z, treeRate);
+                            }
+                        }
                     }
                     else if (y > h - 3)
                     {
@@ -440,24 +447,30 @@ public class BlockWorld : MonoBehaviour
 
     }
 
-/*    void TrySpread(ChunkMeshWorld chunk,int x,int y,int z)
+    bool HasNearbyTree(ChunkMeshWorld chunk, int x, int y, int z, int radius)
     {
-        if (x < 0 || x >= chunk._chunkSize)
-            return;
+        for(int dx = -radius; dx <= radius; dx++)
+        {
+            for (int dz = -radius; dz <= radius; dz++)
+            {
+                int nx = x + dx;
+                int nz = z + dz;
 
-        if (z < 0 || z >= chunk._chunkSize)
-            return;
+                if (nx < 0 || nx >= chunkSize)
+                    continue;
 
-        if (y < 0 || y >= chunk.height)
-            return;
+                if (nz < 0 || nz >= chunkSize)
+                    continue;
 
-        if (chunk.blocks[x, y, z] != 0)
-            return;
-
-        chunk.blocks[x, y, z] = 8;
+                for (int ny = Mathf.Max(0, y -4); ny <= Mathf.Min(chunk.height - 1, y + 8); ny++)
+                {
+                    if (chunk.blocks[nx, ny, nz] == 4)
+                        return true;
+                }
+            }
+        }
+        return false;
     }
-
-    */
 
     public void ModifyBlock(Vector3Int worldPos,int blockID)
     {
