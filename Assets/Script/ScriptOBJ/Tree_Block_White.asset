@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b027b3d4470f7d54bb59b3156c98920e, type: 3}
-  m_Name: Fe_InGot
+  m_Name: Tree_Block_White
   m_EditorClassIdentifier: 
-  icon: {fileID: 21300000, guid: a3a90bee53d963b49b37832a5d7fb0d9, type: 3}
-  ItemName: "\u9244\u306E\u30A4\u30F3\u30B4\u30C3\u30C8"
-  blockID: 126
+  icon: {fileID: 21300000, guid: 417ee6c94a9dbb5419b148d23b734f93, type: 3}
+  ItemName: "\u767D\u3044\u6728\u6750"
+  blockID: 7
   blockPrefab: {fileID: 5757061647862183185, guid: a20ec64c44e5f634486029003d604fab, type: 3}
-  Itemdel: "\u9244\u3092\u713C\u3044\u305F\u3082\u306E"
+  Itemdel: "\u767D\u6A3A\u306E\u52A0\u5DE5\u54C1"
