@@ -5146,6 +5146,8 @@ MonoBehaviour:
   allRecipes:
   - {fileID: 11400000, guid: c10fa754a0a478947a5aac56766261a1, type: 2}
   - {fileID: 11400000, guid: e2689127dc3b3da4ab8ce9ea0e61eb32, type: 2}
+  - {fileID: 11400000, guid: 8aac823a99467e549b9025eda0983e07, type: 2}
+  - {fileID: 11400000, guid: cd7da154807a13844a4362582cb6437b, type: 2}
 --- !u!114 &639944132
 MonoBehaviour:
   m_ObjectHideFlags: 0
