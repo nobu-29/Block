@@ -10247,10 +10247,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBody: {fileID: 1923960922}
   cameraHolder: {fileID: 1210267265}
-  _playerCamera: {fileID: 0}
+  _playerCamera: {fileID: 1210267262}
   sensitivityMouse: 1
   sensitivityGamepad: 1
-  world: {fileID: 0}
+  world: {fileID: 519323031}
 --- !u!1 &1218081267
 GameObject:
   m_ObjectHideFlags: 0
