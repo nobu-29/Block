@@ -177,6 +177,18 @@ public class ChunkMeshWorld : MonoBehaviour
     }
 
 
+    float GetWaterHeight (int id)
+    {
+        if (id == 8)
+            return 0.9f;
+        if(id >= 800 && id <= 806)
+        {
+            int level = 807 - id;
+            return 0.2f + (level * 0.1f);
+        }
+        return 0.9f;
+    }
+
     void CheckFace(int x, int y, int z, Vector3 dir)
     {
         int nx = x + (int)dir.x;
@@ -227,7 +239,7 @@ public class ChunkMeshWorld : MonoBehaviour
         if (neighborID != 0)
             return;
 
-        AddWaterFace(new Vector3(x, y + worldMinY, z),dir);
+        AddWaterFace(new Vector3(x, y + worldMinY, z),dir, blocks[x, y, z]);
     }
 
 
@@ -297,7 +309,7 @@ public class ChunkMeshWorld : MonoBehaviour
         uv.Add(uvOffset + new Vector2(0, size));
     }
 
-    void AddWaterFace(Vector3 pos, Vector3 dir)
+    void AddWaterFace(Vector3 pos, Vector3 dir, int waterID)
     {
         if (dir == Vector3.down) return;
 
@@ -305,7 +317,7 @@ public class ChunkMeshWorld : MonoBehaviour
 
         Vector3[] wQuad = new Vector3[4];
 
-        float waterHeight = 0.9f;
+        float waterHeight = GetWaterHeight(waterID);
 
         if (dir == Vector3.forward)
         {
