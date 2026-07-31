@@ -3472,7 +3472,7 @@ MonoBehaviour:
   worldMaxY: 192
   seaLevel: 10
   treeRate: 1
-  noiseScale: 0.5
+  noiseScale: 0.08
   noiseScale_mini: 0.2
   heightMultiplier: 10
   heightMultiplier_mini: 4
@@ -10247,8 +10247,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerBody: {fileID: 1923960922}
   cameraHolder: {fileID: 1210267265}
+  _playerCamera: {fileID: 0}
   sensitivityMouse: 1
   sensitivityGamepad: 1
+  world: {fileID: 0}
 --- !u!1 &1218081267
 GameObject:
   m_ObjectHideFlags: 0

@@ -355,15 +355,6 @@ public class BlockWorld : MonoBehaviour
 
                 float forestNoise = Mathf.PerlinNoise(worldX * 0.04f, worldZ * 0.04f);
 
-               /* //çªîôÇ…Ç∑ÇÈÇ©Ç«Ç§Ç©ÇÃîªíË
-                bool isDesert = biomeNoise > 0.7f;
-
-                bool isPlains = biomeNoise >= 0.4f && biomeNoise < 0.7f;
-
-                bool isForest = biomeNoise >= 0.2f && biomeNoise < 0.4f;
-
-                bool isSnow = biomeNoise < 0.2f;*/
-
                 int h = Mathf.FloorToInt(height);
 
                 if (biome != Biome.Ocean && biome != Biome.Desert && h < seaLevel)
@@ -372,17 +363,24 @@ public class BlockWorld : MonoBehaviour
                 for (int y = worldMinY; y <= h; y++)
                 {
                     float caveNoise = Mathf.PerlinNoise((worldX + 1000) * 0.08f, (worldZ + y) * 0.08f);
+                    float beachNoise = Mathf.PerlinNoise(worldX * 0.08f, worldZ * 0.08f);
+
+                    bool beach = biome != Biome.Ocean && h >= seaLevel && h <= seaLevel + 2 && beachNoise > 0.6f;
 
                     int localY = chunkMesh.WorldYToLocalY(y);
 
                     if (y == worldMinY)
                         chunkMesh.blocks[x, localY, z] = 99; // ä‚î’
+
+                    //ínï\Ç‡ÇµÇ≠ÇÕêÖíÍ
                     else if(y == h)
                     {
-                        if (biome == Biome.Desert)
+                        if (biome == Biome.Desert || biome == Biome.Ocean)
                             chunkMesh.blocks[x, localY, z] = 14; // çª
+
                         else if (biome == Biome.SnowMountains || h > 40)
                             chunkMesh.blocks[x, localY, z] = 9; //ê·
+
                         else
                             chunkMesh.blocks[x, localY, z] = 1; // ëê
 
@@ -409,10 +407,15 @@ public class BlockWorld : MonoBehaviour
                     else if (y > h - 3)
                     {
 
-                        if(biome == Biome.Desert)
+                        if (biome == Biome.Desert)
                             chunkMesh.blocks[x, localY, z] = 14; // çª
+
+                        else if (biome == Biome.Ocean)
+                            chunkMesh.blocks[x, localY, z] = 3; //êŒ
+
                         else if (biome == Biome.SnowMountains || h > 40)
                             chunkMesh.blocks[x, localY, z] = 9; //ê·
+
                         else
                             chunkMesh.blocks[x, localY, z] = 2; // ìy
                     }
