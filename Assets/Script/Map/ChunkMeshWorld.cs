@@ -349,10 +349,19 @@ public class ChunkMeshWorld : MonoBehaviour
         }
         else if (dir == Vector3.up)
         {
-            wQuad[0] = pos + new Vector3(0, waterHeight, 1);
-            wQuad[1] = pos + new Vector3(1, waterHeight, 1);
-            wQuad[2] = pos + new Vector3(1, waterHeight, 0);
-            wQuad[3] = pos + new Vector3(0, waterHeight, 0);
+            int wx = (int)transform.position.x + (int)pos.x;
+            int wy = (int)pos.y;
+            int wz = (int)transform.position.z + (int)pos.z;
+
+            float nw = GetCornerHeight(wx, wy, wz + 1);
+            float ne = GetCornerHeight(wx + 1, wy, wz + 1);
+            float se = GetCornerHeight(wx + 1, wy, wz);
+            float sw = GetCornerHeight(wx, wy, wz);
+
+            wQuad[0] = pos + new Vector3(0, nw, 1);
+            wQuad[1] = pos + new Vector3(1, ne, 1);
+            wQuad[2] = pos + new Vector3(1, se, 0);
+            wQuad[3] = pos + new Vector3(0, sw, 0);
         }
         else if (dir == Vector3.down)
         {
@@ -384,6 +393,35 @@ public class ChunkMeshWorld : MonoBehaviour
     bool IsWater(int id)
     {
         return id == 8 || (id >= 800 && id <= 806);
+    }
+
+    float GetCornerHeight(int x, int y, int z)
+    {
+        float total = 0;
+        int count = 0;
+
+        Vector3Int[] offsets =
+        {
+            new Vector3Int(0,0,0),
+            new Vector3Int(-1,0,0),
+            new Vector3Int(0,0,-1),
+            new Vector3Int(-1,0,-1)
+        };
+
+        foreach (var o in offsets)
+        {
+            int id = world.GetBlock(new Vector3Int(x + o.x, y,z + o.z));
+
+            if (IsWater(id))
+            {
+                total += GetWaterHeight(id);
+                count++;
+            }
+        }
+        if (count == 0)
+            return 0.1f;
+
+        return total / count;
     }
 
     int GetNeighborBlock(int x, int y, int z)
