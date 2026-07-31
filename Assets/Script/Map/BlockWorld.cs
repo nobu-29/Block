@@ -118,7 +118,7 @@ public class BlockWorld : MonoBehaviour
         List<Vector2Int> toRemove = new List<Vector2Int>();
 
         foreach(var chunk in chunks)
-{
+        {
             if (!neededChunks.Contains(chunk.Key))
             {
                 Vector2Int pos = chunk.Key;
@@ -204,6 +204,7 @@ public class BlockWorld : MonoBehaviour
         }
 
         activeWater = newWater;
+        CreateInfiniteWater();
     }
 
     void UpdateNeighborChunks(Vector3Int worldPos)
@@ -233,6 +234,50 @@ public class BlockWorld : MonoBehaviour
         if(localZ == chunkSize - 1)
         {
             MarkChunkDirty(new Vector2Int(Mathf.FloorToInt((float)worldPos.x / chunkSize), Mathf.FloorToInt((float)worldPos.z / chunkSize) + 1));
+        }
+    }
+
+    void CreateInfiniteWater()
+    {
+        List<Vector3Int> newSources = new List<Vector3Int>();
+
+        foreach(var water in activeWater)
+        {
+            CheckInfiniteSouce(water + Vector3Int.right, newSources);
+            CheckInfiniteSouce(water + Vector3Int.left, newSources);
+            CheckInfiniteSouce(water + Vector3Int.forward, newSources);
+            CheckInfiniteSouce(water + Vector3Int.back, newSources);
+        }
+
+        foreach(var pos in newSources)
+        {
+            ModifyBlock(pos, 8);
+            ActivateWater(pos);
+        }
+    }
+
+    void CheckInfiniteSouce(Vector3Int pos, List<Vector3Int> newSources)
+    {
+        if (GetBlock(pos) != 0)
+            return;
+
+        int sourceCount = 0;
+
+        if (GetWaterLevel(GetBlock(pos + Vector3Int.right)) >= 7)
+            sourceCount++;
+
+        if (GetWaterLevel(GetBlock(pos + Vector3Int.left)) >= 7)
+            sourceCount++;
+
+        if (GetWaterLevel(GetBlock(pos + Vector3Int.forward)) >= 7)
+            sourceCount++;
+
+        if (GetWaterLevel(GetBlock(pos + Vector3Int.back)) >= 7)
+            sourceCount++;
+
+        if(sourceCount >= 2)
+        {
+            newSources.Add(pos);
         }
     }
 
