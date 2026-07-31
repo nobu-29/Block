@@ -206,6 +206,44 @@ public class BlockWorld : MonoBehaviour
         activeWater = newWater;
     }
 
+    void UpdateNeighborChunks(Vector3Int worldPos)
+    {
+        int localX = ((worldPos.x % chunkSize) + chunkSize) % chunkSize;
+        int localZ = ((worldPos.z % chunkSize) + chunkSize) % chunkSize;
+
+        //左端
+        if(localX == 0)
+        {
+            MarkChunkDirty(new Vector2Int(Mathf.FloorToInt((float)worldPos.x / chunkSize) - 1, Mathf.FloorToInt((float)worldPos.z / chunkSize)));
+        }
+
+        //右端
+        if(localX == chunkSize - 1)
+        {
+            MarkChunkDirty(new Vector2Int(Mathf.FloorToInt((float)worldPos.x / chunkSize) + 1, Mathf.FloorToInt((float)worldPos.z / chunkSize)));
+        }
+
+        //奥
+        if(localZ == 0)
+        {
+            MarkChunkDirty(new Vector2Int(Mathf.FloorToInt((float)worldPos.x / chunkSize), Mathf.FloorToInt((float)worldPos.z / chunkSize) - 1));
+        }
+
+        //手前
+        if(localZ == chunkSize - 1)
+        {
+            MarkChunkDirty(new Vector2Int(Mathf.FloorToInt((float)worldPos.x / chunkSize), Mathf.FloorToInt((float)worldPos.z / chunkSize) + 1));
+        }
+    }
+
+    void MarkChunkDirty(Vector2Int chunkPos)
+    {
+        if(chunks.TryGetValue(chunkPos, out ChunkMeshWorld chunk))
+        {
+            dirtyChunks.Add(chunk);
+        }
+    }
+
     Vector2Int GetPlayerChunk()
     {
         int x = Mathf.FloorToInt(_player.position.x / chunkSize);
@@ -612,6 +650,7 @@ public class BlockWorld : MonoBehaviour
         //savedChunks[chunkPos].modifiedBlocks[worldPos] = blockID;
 
         dirtyChunks.Add(chunkMesh);
+        UpdateNeighborChunks(worldPos);
     }
 
     public int GetBlock(Vector3Int worldPos)
