@@ -192,7 +192,9 @@ public class ChunkMeshWorld : MonoBehaviour
 
         //‹ó‹C‚Ìê‡
         if (neighborID == -1)
+        {
             return;
+        }
 
         //‰½‚à‚È‚¢‹ó‹C‚Æ…ˆÈŠO‚È‚ç‰B‚·
         if (neighborID != 0 && !IsWater(neighborID)) 
@@ -215,7 +217,9 @@ public class ChunkMeshWorld : MonoBehaviour
         int neighborID = GetNeighborBlock(nx, ny, nz);
 
         if (neighborID == -1)
+        {
             return;
+        }
 
         if (IsWater(neighborID))
             return;

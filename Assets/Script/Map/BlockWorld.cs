@@ -254,23 +254,6 @@ public class BlockWorld : MonoBehaviour
 
     void GenerateChunk(Vector2Int chunkPos)
     {
-        /*bool firstGenerate = !generatedChunks.Contains(chunkPos);
-
-        if (firstGenerate)
-        {
-            generatedChunks.Add(chunkPos);
-        }
-
-        if (chunks.ContainsKey(chunkPos))
-        {
-            chunks[chunkPos].gameObject.SetActive(true);
-            return;
-        }
-        else
-        {
-            
-        }
-*/
         if (chunks.ContainsKey(chunkPos))
         {
             chunks[chunkPos].gameObject.SetActive(true);
@@ -482,6 +465,12 @@ public class BlockWorld : MonoBehaviour
 
         chunks.Add(chunkPos, chunkMesh);
 
+        MarkChunkDirty(chunkPos);
+
+        MarkChunkDirty(chunkPos + Vector2Int.right);
+        MarkChunkDirty(chunkPos + Vector2Int.left);
+        MarkChunkDirty(chunkPos + Vector2Int.up);
+        MarkChunkDirty(chunkPos + Vector2Int.down);
 
         chunkObj.transform.position = new Vector3(
             chunkPos.x * chunkSize,

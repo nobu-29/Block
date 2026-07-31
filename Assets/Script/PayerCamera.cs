@@ -75,7 +75,7 @@ public class PayerCamera : MonoBehaviour
         }
         else
         {
-            RenderSettings.fog = true;
+            RenderSettings.fog = false;
             RenderSettings.fogColor = normalFogColor;
             RenderSettings.fogDensity = normalFogDensity;
         }
